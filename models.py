@@ -57,15 +57,13 @@ class Order(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     use_cashback = db.Column(db.Boolean, default=False)
     cashback_used = db.Column(db.Float, default=0.0)
+    is_paid = db.Column(db.Boolean, default=False)
+    payment_id = db.Column(db.String(50), default=None)
+    paid_at = db.Column(db.DateTime, default=None)
 
-    # ПОЛЯ ДЛЯ ОПЛАТЫ
-    is_paid = db.Column(db.Boolean, default=False)  # Статус оплаты
-    payment_id = db.Column(db.String(50), default=None)  # ID транзакции
-    paid_at = db.Column(db.DateTime, default=None)  # Дата оплаты
-
+    # ИСПРАВЛЕНО: добавил back_populates
     user = db.relationship('User', back_populates='orders')
     items = db.relationship('OrderItem', backref='order', lazy=True, cascade='all, delete-orphan')
-
 
 class OrderItem(db.Model):
     __tablename__ = 'order_item'
@@ -78,7 +76,6 @@ class OrderItem(db.Model):
 
 class User(UserMixin, db.Model):
     __tablename__ = 'user'
-    __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False, index=True)
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
@@ -86,8 +83,9 @@ class User(UserMixin, db.Model):
     phone = db.Column(db.String(30))
     address = db.Column(db.String(255))
     cashback_balance = db.Column(db.Float, default=0.0)
-    is_admin = db.Column(db.Boolean, default=False)  # НОВОЕ ПОЛЕ
+    is_admin = db.Column(db.Boolean, default=False)
 
+    # ИСПРАВЛЕНО: убрал backref, оставил только back_populates
     orders = db.relationship('Order', back_populates='user', cascade='all, delete-orphan')
 
     def set_password(self, password):
