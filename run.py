@@ -36,8 +36,24 @@ app.register_blueprint(main_bp)
 app.cli.add_command(seed_cli)
 
 # --------------------------
+# Автоматическое создание администратора
+# --------------------------
+with app.app_context():
+    try:
+        admin = User.query.filter_by(email="admin@food.com").first()
+        if not admin:
+            admin = User(username="Admin", email="admin@food.com", is_admin=True)
+            admin.set_password("admin123")
+            db.session.add(admin)
+            db.session.commit()
+            print("✅ Администратор создан: admin@food.com / admin123")
+        else:
+            print("ℹ️ Администратор уже существует")
+    except Exception as e:
+        print(f"⚠️ Ошибка при создании админа: {e}")
+
+# --------------------------
 # Запуск приложения
 # --------------------------
 if __name__ == '__main__':
     app.run(debug=True)
-
