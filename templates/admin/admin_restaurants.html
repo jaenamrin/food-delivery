@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+{% block title %}Управление ресторанами{% endblock %}
+
+{% block content %}
+<div class="admin-section">
+    <!-- КНОПКА НАЗАД -->
+    <div class="back-link-wrapper">
+        <a href="{{ url_for('main.admin_panel') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+    </div>
+
+    <div class="admin-header">
+        <h1><i class="fas fa-store"></i> Управление ресторанами</h1>
+        <a href="{{ url_for('main.admin_add_restaurant') }}" class="btn-primary">
+            <i class="fas fa-plus"></i> Добавить ресторан
+        </a>
+    </div>
+
+    <!-- остальной код тот же -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Изображение</th>
+                    <th>Название</th>
+                    <th>Город</th>
+                    <th>Доставка</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in restaurants %}
+                <tr>
+                    <td>{{ r.id }}</td>
+                    <td><img src="{{ url_for('static', filename=r.image) }}" alt="{{ r.name }}" class="table-img"></td>
+                    <td><strong>{{ r.name }}</strong></td>
+                    <td><i class="fas fa-map-marker-alt"></i> {{ r.city }}</td>
+                    <td><i class="fas fa-clock"></i> {{ r.delivery_time }} мин</td>
+                    <td class="table-actions">
+                        <a href="{{ url_for('main.admin_edit_restaurant', restaurant_id=r.id) }}" class="btn-edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form method="POST" action="{{ url_for('main.admin_delete_restaurant', restaurant_id=r.id) }}" style="display:inline;" onsubmit="return confirm('Удалить ресторан «{{ r.name }}»?')">
+                            <button type="submit" class="btn-delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+.back-link-wrapper {
+    margin-bottom: 20px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 8px 0;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #00b83a;
+}
+
+.admin-section {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.admin-header h1 {
+    margin: 0;
+    color: #1a1a1a;
+    font-size: 1.8rem;
+}
+
+.admin-header h1 i {
+    color: #00b83a;
+    margin-right: 10px;
+}
+
+.btn-primary {
+    background: #00b83a;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 40px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background: #008f2c;
+    transform: translateY(-2px);
+}
+
+.admin-table-wrapper {
+    overflow-x: auto;
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.admin-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.admin-table tr:hover {
+    background: #fafafa;
+}
+
+.table-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.table-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-edit, .btn-delete {
+    padding: 8px 14px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-edit {
+    background: #e3f2fd;
+    color: #2196f3;
+}
+
+.btn-edit:hover {
+    background: #2196f3;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background: #ffebee;
+    color: #ff5a5f;
+}
+
+.btn-delete:hover {
+    background: #ff5a5f;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.flash {
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.flash.success {
+    background: #e8f5e9;
+    color: #00b83a;
+    border-left: 4px solid #00b83a;
+}
+
+.flash.warning {
+    background: #fff3e0;
+    color: #ff9800;
+    border-left: 4px solid #ff9800;
+}
+</style>
+{% endblock %}

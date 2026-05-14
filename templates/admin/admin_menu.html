@@ -1,0 +1,438 @@
+{% extends "base.html" %}
+{% block title %}Управление меню{% endblock %}
+
+{% block content %}
+<div class="admin-section">
+    <div class="back-link-wrapper">
+        <a href="{{ url_for('main.admin_panel') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Назад в админ-панель
+        </a>
+    </div>
+
+    <div class="admin-header">
+        <h1><i class="fas fa-utensils"></i> Управление меню</h1>
+        <a href="{{ url_for('main.admin_add_menu_item') }}" class="btn-primary">
+            <i class="fas fa-plus"></i> Добавить блюдо
+        </a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Панель поиска и сортировки -->
+    <div class="filter-panel">
+        <form method="GET" class="search-form">
+            <div class="search-input-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" name="search" placeholder="Поиск по названию..." value="{{ search }}" class="search-input-admin">
+            </div>
+            <button type="submit" class="search-btn-admin">Найти</button>
+            {% if search %}
+                <a href="{{ url_for('main.admin_menu') }}" class="clear-btn">Очистить</a>
+            {% endif %}
+        </form>
+
+        <div class="sorting-buttons">
+            <span class="sort-label"><i class="fas fa-sort"></i> Сортировать:</span>
+            <a href="{{ url_for('main.admin_menu', sort='category', order='asc', search=search) }}" class="sort-btn {% if sort_by == 'category' %}active{% endif %}">
+                По категориям
+            </a>
+            <a href="{{ url_for('main.admin_menu', sort='restaurant', order='asc', search=search) }}" class="sort-btn {% if sort_by == 'restaurant' %}active{% endif %}">
+                По ресторану
+            </a>
+            <a href="{{ url_for('main.admin_menu', sort='name', order='asc', search=search) }}" class="sort-btn {% if sort_by == 'name' %}active{% endif %}">
+                По названию
+            </a>
+            <a href="{{ url_for('main.admin_menu', sort='price', order='asc', search=search) }}" class="sort-btn {% if sort_by == 'price' %}active{% endif %}">
+                По цене ↑
+            </a>
+            <a href="{{ url_for('main.admin_menu', sort='price', order='desc', search=search) }}" class="sort-btn {% if sort_by == 'price' and order == 'desc' %}active{% endif %}">
+                По цене ↓
+            </a>
+        </div>
+    </div>
+
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Изображение</th>
+                    <th>Название</th>
+                    <th>Ресторан</th>
+                    <th>Цена</th>
+                    <th>Категория</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set category_order = ['pizza', 'burger', 'sushi', 'breakfast', 'drink', 'other'] %}
+                {% set current_category = '' %}
+
+                {% for item in menu_items %}
+                    {% if sort_by == 'category' and current_category != item.category %}
+                        {% set current_category = item.category %}
+                        <tr class="category-separator">
+                            <td colspan="7">
+                                <div class="category-title">
+                                    {% if item.category == 'pizza' %} Пицца
+                                    {% elif item.category == 'burger' %} Бургеры
+                                    {% elif item.category == 'sushi' %} Суши
+                                    {% elif item.category == 'breakfast' %} Завтраки
+                                    {% elif item.category == 'drink' %} Напитки
+                                    {% elif item.category == 'dessert' %} Десерты
+                                    {% else %} Другое
+                                    {% endif %}
+                                    <span class="category-count">({{ menu_items|selectattr('category', 'equalto', item.category)|list|length }} блюд)</span>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    <tr class="menu-item-row">
+                        <td>{{ item.id }}</td>
+                        <td>
+                            <img src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }}" class="table-img">
+                        </td>
+                        <td><strong>{{ item.name }}</strong></td>
+                        <td><i class="fas fa-store"></i> {{ item.restaurant.name }}</td>
+                        <td><strong style="color:#00b83a;">{{ item.price }} ₽</strong></td>
+                        <td>
+                            {% if item.category == 'pizza' %}
+                                <span class="category-pizza">🍕 Пицца</span>
+                            {% elif item.category == 'burger' %}
+                                <span class="category-burger">🍔 Бургеры</span>
+                            {% elif item.category == 'sushi' %}
+                                <span class="category-sushi">🍣 Суши</span>
+                            {% elif item.category == 'breakfast' %}
+                                <span class="category-breakfast">☕ Завтраки</span>
+                            {% elif item.category == 'drink' %}
+                                <span class="category-drink">🥤 Напитки</span>
+                            {% elif item.category == 'dessert' %}
+                                <span class="category-dessert">🍰 Десерты</span>
+                            {% else %}
+                                <span class="category-other">📦 Другое</span>
+                            {% endif %}
+                        </td>
+                        <td class="table-actions">
+                            <a href="{{ url_for('main.admin_edit_menu_item', item_id=item.id) }}" class="btn-edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form method="POST" action="{{ url_for('main.admin_delete_menu_item', item_id=item.id) }}" style="display:inline;" onsubmit="return confirm('Удалить блюдо «{{ item.name }}»?')">
+                                <button type="submit" class="btn-delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="empty-table">
+                            <i class="fas fa-utensils"></i>
+                            <p>Блюда не найдены</p>
+                            <a href="{{ url_for('main.admin_add_menu_item') }}" class="btn-primary">Добавить первое блюдо</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+.admin-section {
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.back-link-wrapper {
+    margin-bottom: 20px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 8px 0;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #00b83a;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.admin-header h1 {
+    margin: 0;
+    color: #1a1a1a;
+    font-size: 1.8rem;
+}
+
+.admin-header h1 i {
+    color: #00b83a;
+    margin-right: 10px;
+}
+
+.btn-primary {
+    background: #00b83a;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 40px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background: #008f2c;
+    transform: translateY(-2px);
+}
+
+/* Панель фильтрации */
+.filter-panel {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 25px;
+    border: 1px solid #eaeaea;
+}
+
+.search-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.search-input-wrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input-wrapper i {
+    position: absolute;
+    left: 15px;
+    color: #6c757d;
+}
+
+.search-input-admin {
+    width: 100%;
+    padding: 12px 15px 12px 45px;
+    border: 1px solid #ddd;
+    border-radius: 40px;
+    font-size: 0.9rem;
+}
+
+.search-input-admin:focus {
+    outline: none;
+    border-color: #00b83a;
+}
+
+.search-btn-admin {
+    background: #00b83a;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 40px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.clear-btn {
+    background: #f0f0f0;
+    color: #1a1a1a;
+    padding: 12px 24px;
+    border-radius: 40px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.sorting-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.sort-label {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+.sort-btn {
+    background: #f8f9fa;
+    padding: 8px 16px;
+    border-radius: 30px;
+    text-decoration: none;
+    color: #1a1a1a;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.sort-btn:hover {
+    background: #e9ecef;
+}
+
+.sort-btn.active {
+    background: #00b83a;
+    color: white;
+}
+
+/* Таблица */
+.admin-table-wrapper {
+    overflow-x: auto;
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.admin-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+/* Разделитель категорий */
+.category-separator td {
+    background: #f8f9fa;
+    padding: 12px 15px;
+}
+
+.category-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1a1a1a;
+}
+
+.category-count {
+    font-size: 0.8rem;
+    font-weight: normal;
+    color: #6c757d;
+    margin-left: 10px;
+}
+
+.menu-item-row:hover {
+    background: #fafafa;
+}
+
+.table-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Бейджи категорий */
+.category-pizza, .category-burger, .category-sushi, .category-breakfast, .category-drink, .category-other {
+    padding: 5px 12px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.category-pizza { background: #fff3e0; color: #ff9800; }
+.category-burger { background: #e8f5e9; color: #00b83a; }
+.category-sushi { background: #e3f2fd; color: #2196f3; }
+.category-breakfast { background: #fce4ec; color: #e91e63; }
+.category-drink { background: #e8eaf6; color: #3f51b5; }
+.category-other { background: #f5f5f5; color: #6c757d; }
+
+/* Действия */
+.table-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-edit, .btn-delete {
+    padding: 8px 14px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-edit {
+    background: #e3f2fd;
+    color: #2196f3;
+}
+
+.btn-edit:hover {
+    background: #2196f3;
+    color: white;
+}
+
+.btn-delete {
+    background: #ffebee;
+    color: #ff5a5f;
+}
+
+.btn-delete:hover {
+    background: #ff5a5f;
+    color: white;
+}
+
+.empty-table {
+    text-align: center;
+    padding: 60px !important;
+}
+
+.empty-table i {
+    font-size: 50px;
+    color: #ccc;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.empty-table p {
+    margin-bottom: 20px;
+    color: #6c757d;
+}
+
+.flash {
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.flash.success {
+    background: #e8f5e9;
+    color: #00b83a;
+    border-left: 4px solid #00b83a;
+}
+</style>
+{% endblock %}

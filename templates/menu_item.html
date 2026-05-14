@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+{% block title %}{{ item.name }} — Food Delivery{% endblock %}
+
+{% block content %}
+<div class="dish-page">
+    <!-- Кнопка назад -->
+    <div class="back-link-wrapper">
+        <a href="{{ url_for('main.restaurant', restaurant_id=item.restaurant_id) }}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Назад в меню
+        </a>
+    </div>
+
+    <div class="dish-container">
+        <!-- Левая колонка - изображение -->
+        <div class="dish-image">
+            <img src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }}">
+            {% if item.category == 'pizza' %}
+                <span class="dish-badge pizza"> Пицца</span>
+            {% elif item.category == 'burger' %}
+                <span class="dish-badge burger"> Бургер</span>
+            {% elif item.category == 'sushi' %}
+                <span class="dish-badge sushi"> Суши</span>
+            {% elif item.category == 'breakfast' %}
+                <span class="dish-badge breakfast"> Завтрак</span>
+            {% elif item.category == 'dessert' %}
+                <span class="dish-badge dessert"> Десерт</span>
+            {% elif item.category == 'drink' %}
+                <span class="dish-badge drink"> Напиток</span>
+            {% else %}
+                <span class="dish-badge other"> Другое</span>
+            {% endif %}
+        </div>
+
+        <!-- Правая колонка - информация -->
+        <div class="dish-info">
+            <h1>{{ item.name }}</h1>
+
+            <div class="dish-meta">
+                <div class="meta-item">
+                    <i class="fas fa-store"></i>
+                    <span>{{ item.restaurant.name }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-weight-hanging"></i>
+                    <span>{{ item.weight }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Доставка: {{ item.restaurant.delivery_time }}–{{ item.restaurant.delivery_time + 15 }} мин</span>
+                </div>
+            </div>
+
+            <div class="dish-description">
+                <h3><i class="fas fa-align-left"></i> Описание</h3>
+                <p>{{ item.description }}</p>
+            </div>
+
+            <div class="dish-price">
+                <div class="price">{{ item.price }} ₽</div>
+                <form action="{{ url_for('main.add_to_cart', item_id=item.id) }}" method="post">
+                    <button type="submit" class="add-to-cart-btn">
+                        <i class="fas fa-shopping-cart"></i> Добавить в корзину
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Похожие блюда (рекомендации) -->
+    {% set similar_items = item.restaurant.menu_items|selectattr("category", "equalto", item.category)|list %}
+    {% if similar_items|length > 1 %}
+    <div class="similar-section">
+        <h2><i class="fas fa-heart"></i> С этим блюдом также заказывают</h2>
+        <div class="similar-grid">
+            {% for similar in similar_items %}
+                {% if similar.id != item.id %}
+                <div class="similar-card">
+                    <a href="{{ url_for('main.menu_item', item_id=similar.id) }}">
+                        <img src="{{ url_for('static', filename=similar.image) }}" alt="{{ similar.name }}">
+                        <div class="similar-info">
+                            <h4>{{ similar.name }}</h4>
+                            <p class="similar-price">{{ similar.price }} ₽</p>
+                        </div>
+                    </a>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.dish-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 20px 60px;
+}
+
+/* Кнопка назад */
+.back-link-wrapper {
+    margin-bottom: 20px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 8px 0;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #00b83a;
+}
+
+/* Основной контейнер */
+.dish-container {
+    display: flex;
+    gap: 50px;
+    background: white;
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 50px;
+}
+
+/* Левая колонка - изображение */
+.dish-image {
+    flex: 1;
+    position: relative;
+    background: #f8f9fa;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dish-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    max-height: 450px;
+}
+
+.dish-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 8px 16px;
+    border-radius: 40px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.dish-badge.pizza { background: #ff9800; }
+.dish-badge.burger { background: #00b83a; }
+.dish-badge.sushi { background: #2196f3; }
+.dish-badge.breakfast { background: #e91e63; }
+.dish-badge.dessert { background: #9c27b0; }
+.dish-badge.drink { background: #3f51b5; }
+.dish-badge.other { background: #6c757d; }
+
+/* Правая колонка - информация */
+.dish-info {
+    flex: 1;
+    padding: 40px 40px 40px 0;
+}
+
+.dish-info h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #1a1a1a;
+}
+
+.dish-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.meta-item i {
+    color: #00b83a;
+    width: 18px;
+}
+
+.dish-description {
+    margin-bottom: 30px;
+}
+
+.dish-description h3 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dish-description h3 i {
+    color: #00b83a;
+}
+
+.dish-description p {
+    color: #6c757d;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.dish-price {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eaeaea;
+}
+
+.price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #00b83a;
+}
+
+.add-to-cart-btn {
+    background: #00b83a;
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.add-to-cart-btn:hover {
+    background: #008f2c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,184,58,0.3);
+}
+
+/* Похожие блюда */
+.similar-section {
+    margin-top: 20px;
+}
+
+.similar-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+    color: #1a1a1a;
+}
+
+.similar-section h2 i {
+    color: #00b83a;
+    margin-right: 10px;
+}
+
+.similar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.similar-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid #eaeaea;
+}
+
+.similar-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+}
+
+.similar-card a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.similar-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.similar-info {
+    padding: 12px;
+}
+
+.similar-info h4 {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    color: #1a1a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.similar-price {
+    font-weight: 700;
+    color: #00b83a;
+    font-size: 1rem;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .dish-container {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .dish-info {
+        padding: 30px 20px;
+    }
+
+    .dish-image {
+        min-height: 250px;
+    }
+
+    .dish-info h1 {
+        font-size: 1.5rem;
+    }
+
+    .price {
+        font-size: 1.5rem;
+    }
+
+    .add-to-cart-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .dish-price {
+        flex-direction: column;
+    }
+
+    .similar-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+}
+</style>
+{% endblock %}
+
+
+
+
+
+
+
+
+

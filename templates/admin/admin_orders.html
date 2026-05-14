@@ -1,0 +1,439 @@
+{% extends "base.html" %}
+{% block title %}Управление заказами{% endblock %}
+
+{% block content %}
+<div class="admin-section">
+    <div class="back-link-wrapper">
+        <a href="{{ url_for('main.admin_panel') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+    </div>
+
+    <div class="admin-header">
+        <h1><i class="fas fa-truck"></i> Управление заказами</h1>
+        <div class="stats-badge">
+            <i class="fas fa-chart-line"></i> Всего: {{ orders|length }} заказов
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>№ заказа</th>
+                    <th>Клиент</th>
+                    <th>Адрес доставки</th>
+                    <th>Товары</th>
+                    <th>Сумма</th>
+                    <th>Дата</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>
+                        <div class="order-id">#{{ order.id }}</div>
+                    </td>
+                    <td>
+                        <div class="customer-info">
+                            <i class="fas fa-user-circle"></i>
+                            <div class="customer-details">
+                                <div class="customer-name">{{ order.user.username }}</div>
+                                <div class="customer-email">{{ order.user.email }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="address-cell">
+                        <i class="fas fa-map-pin"></i> {{ order.address }}
+                    </td>
+                    <td>
+                        <div class="order-items">
+                            <button class="view-items-btn" onclick="showOrderItems({{ order.id }})">
+                                <i class="fas fa-eye"></i> Показать ({{ order.items|length }})
+                            </button>
+                            <div id="items-{{ order.id }}" class="items-popup" style="display:none;">
+                                <div class="items-list">
+                                    <div class="items-header">
+                                        <span>Товар</span>
+                                        <span>Кол-во</span>
+                                    </div>
+                                    {% for item in order.items %}
+                                    <div class="item-row">
+                                        <span>{{ item.menu_item.name }}</span>
+                                        <span>x{{ item.quantity }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="price-badge">{{ order.total_price }} ₽</div>
+                    </td>
+                    <td>
+                        <div class="date-info">
+                            <div class="date-day">{{ order.created_at.strftime('%d.%m.%Y') }}</div>
+                            <div class="date-time">{{ order.created_at.strftime('%H:%M') }}</div>
+                        </div>
+                    </td>
+                    <td>
+                        {% if order.is_active %}
+                            <span class="badge-active"><i class="fas fa-truck"></i> В пути</span>
+                        {% else %}
+                            <span class="badge-completed"><i class="fas fa-check-circle"></i> Доставлен</span>
+                        {% endif %}
+                    </td>
+                    <td class="table-actions">
+                        <button class="btn-view" onclick="showOrderDetails({{ order.id }})" title="Детали заказа">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                        <form method="POST" action="{{ url_for('main.admin_delete_order', order_id=order.id) }}" style="display:inline;" onsubmit="return confirm('Удалить заказ #{{ order.id }}?')">
+                            <button type="submit" class="btn-delete" title="Удалить">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+.admin-section {
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.back-link-wrapper {
+    margin-bottom: 20px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 8px 0;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #00b83a;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.admin-header h1 {
+    margin: 0;
+    color: #1a1a1a;
+    font-size: 1.8rem;
+}
+
+.admin-header h1 i {
+    color: #00b83a;
+    margin-right: 10px;
+}
+
+.stats-badge {
+    background: #f8f9fa;
+    padding: 10px 20px;
+    border-radius: 40px;
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+.stats-badge i {
+    color: #00b83a;
+    margin-right: 8px;
+}
+
+.admin-table-wrapper {
+    overflow-x: auto;
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 18px 16px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.admin-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #1a1a1a;
+    font-size: 0.9rem;
+}
+
+.admin-table tr:hover {
+    background: #fafafa;
+}
+
+/* Номер заказа */
+.order-id {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #00b83a;
+}
+
+/* Информация о клиенте */
+.customer-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.customer-info i {
+    font-size: 32px;
+    color: #00b83a;
+}
+
+.customer-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.customer-name {
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.customer-email {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+/* Адрес */
+.address-cell {
+    max-width: 250px;
+    word-break: break-word;
+    line-height: 1.4;
+    font-size: 0.85rem;
+}
+
+.address-cell i {
+    color: #6c757d;
+    margin-right: 6px;
+}
+
+/* Товары */
+.order-items {
+    position: relative;
+}
+
+.view-items-btn {
+    background: #f0f0f0;
+    color: #1a1a1a;
+    padding: 6px 14px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.view-items-btn:hover {
+    background: #00b83a;
+    color: white;
+}
+
+.items-popup {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 100;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    min-width: 250px;
+    margin-top: 8px;
+    border: 1px solid #eaeaea;
+}
+
+.items-list {
+    padding: 12px;
+}
+
+.items-header {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #f0f0f0;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.item-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 0.85rem;
+    color: #1a1a1a;
+}
+
+/* Цена */
+.price-badge {
+    background: #e8f5e9;
+    color: #00b83a;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+/* Дата */
+.date-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.date-day {
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+.date-time {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+/* Статусы */
+.badge-active {
+    background: #fff3e0;
+    color: #ff9800;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.badge-completed {
+    background: #e8f5e9;
+    color: #00b83a;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+/* Действия */
+.table-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-view, .btn-delete {
+    padding: 8px 12px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+}
+
+.btn-view {
+    background: #f0f0f0;
+    color: #1a1a1a;
+}
+
+.btn-view:hover {
+    background: #00b83a;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background: #ffebee;
+    color: #ff5a5f;
+}
+
+.btn-delete:hover {
+    background: #ff5a5f;
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Flash сообщения */
+.flash {
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+.flash.success {
+    background: #e8f5e9;
+    color: #00b83a;
+    border-left: 4px solid #00b83a;
+}
+</style>
+
+<script>
+function showOrderItems(orderId) {
+    const popup = document.getElementById('items-' + orderId);
+    if (popup.style.display === 'none') {
+        popup.style.display = 'block';
+        setTimeout(() => {
+            document.addEventListener('click', function closePopup(e) {
+                if (!popup.contains(e.target) && !e.target.closest('.view-items-btn')) {
+                    popup.style.display = 'none';
+                    document.removeEventListener('click', closePopup);
+                }
+            });
+        }, 10);
+    } else {
+        popup.style.display = 'none';
+    }
+}
+
+function showOrderDetails(orderId) {
+    alert('Детали заказа #' + orderId + '\nФункция в разработке');
+}
+</script>
+{% endblock %}

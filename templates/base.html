@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Food Delivery{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* Белая тема для навигации */
+    nav a {
+      color: #1a1a1a !important;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 30px;
+      transition: all 0.2s;
+    }
+
+    nav a:hover {
+      color: #00b83a !important;
+      background: #f0f0f0 !important;
+    }
+
+    /* Выпадающий поиск (белая тема) */
+    .search-autocomplete {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      max-height: 320px;
+      overflow-y: auto;
+      background: white;
+      color: #1a1a1a;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      z-index: 2000;
+      display: none;
+      border: 1px solid #eaeaea;
+    }
+
+    .search-autocomplete .group-title {
+      padding: 8px 12px;
+      font-weight: bold;
+      color: #6c757d;
+      background: #f8f9fa;
+      font-size: 0.8rem;
+    }
+
+    .search-autocomplete .item {
+      padding: 10px 12px;
+      cursor: pointer;
+      border-top: 1px solid #f0f0f0;
+      color: #1a1a1a;
+    }
+
+    .search-autocomplete .item:hover {
+      background: #f5f5f5;
+    }
+
+    /* Строка поиска (белая) */
+    .search-input {
+      background: #f5f5f5 !important;
+      border: 1px solid #e0e0e0 !important;
+      border-radius: 40px !important;
+      color: #1a1a1a !important;
+    }
+
+    .search-input:focus {
+      border-color: #00b83a !important;
+      outline: none;
+    }
+
+    .search-btn {
+      background: #00b83a !important;
+      border: none;
+      border-radius: 50%;
+    }
+
+    .search-btn:hover {
+      background: #008f2c !important;
+    }
+
+    .logo-text {
+      font-weight: 700;
+      font-size: 1.3rem;
+      background: linear-gradient(135deg, #00b83a, #008f2c);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Flash сообщения */
+    .flash {
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+
+    .flash.success {
+      background: #00b83a;
+      color: white;
+    }
+
+    .flash.error {
+      background: #ff5a5f;
+      color: white;
+    }
+
+    .flash.warning {
+      background: #ffa500;
+      color: white;
+    }
+
+    .flash.info {
+      background: #2196f3;
+      color: white;
+    }
+  </style>
+</head>
+<body style="margin:0; font-family:'Segoe UI', Arial, sans-serif; background:white; color:#1a1a1a;">
+
+<header style="display:flex; align-items:center; gap:20px; padding:12px 32px; background:white; position:sticky; top:0; z-index:1000; border-bottom:1px solid #eaeaea; box-shadow:0 1px 8px rgba(0,0,0,0.05);">
+  <a href="{{ url_for('main.index') }}" style="display:flex; align-items:center; gap:12px; text-decoration:none;">
+    <img src="{{ url_for('static', filename='images/food_delivery.png') }}" alt="logo" style="height:44px; filter: brightness(0);">
+    <span class="logo-text">Food Delivery</span>
+  </a>
+
+  <div style="position:relative; flex:1; display:flex; justify-content:center;">
+    <div style="width:100%; max-width:800px;">
+      <div style="display:flex; gap:12px; align-items:center;">
+        <input id="search-input" class="search-input" type="text" placeholder="Найти блюдо или ресторан..." autocomplete="off"
+               style="flex:1; height:48px; padding:0 24px; font-size:16px;">
+        <button id="search-button" class="search-btn" title="Найти"
+                style="width:48px; height:48px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+          <i class="fas fa-search" style="color:white; font-size:1.2rem;"></i>
+        </button>
+      </div>
+      <div id="autocomplete" class="search-autocomplete"></div>
+    </div>
+  </div>
+
+  <nav style="display:flex; gap:8px; align-items:center;">
+    {% if current_user.is_authenticated %}
+      <a href="{{ url_for('main.index') }}"><i class="fas fa-home"></i> Главная</a>
+      <a href="{{ url_for('main.cart') }}"><i class="fas fa-shopping-cart"></i> Корзина</a>
+      <a href="{{ url_for('main.profile') }}"><i class="fas fa-user"></i> Профиль</a>
+      {% if current_user.is_admin %}
+        <a href="{{ url_for('main.admin_panel') }}" style="background: #00b83a; color: white !important; border-radius: 30px;">
+          <i class="fas fa-shield-alt"></i> Админка
+        </a>
+      {% endif %}
+      <a href="{{ url_for('main.about') }}"><i class="fas fa-info-circle"></i> О нас</a>
+    {% else %}
+      <a href="{{ url_for('main.login') }}"><i class="fas fa-sign-in-alt"></i> Вход</a>
+      <a href="{{ url_for('main.register') }}"><i class="fas fa-user-plus"></i> Регистрация</a>
+      <a href="{{ url_for('main.about') }}"><i class="fas fa-info-circle"></i> О нас</a>
+    {% endif %}
+  </nav>
+</header>
+
+<main style="min-height:calc(100vh - 120px);">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div style="padding:20px 24px 0 24px; max-width:800px; margin:0 auto;">
+        {% for category, msg in messages %}
+          <div class="flash {{ category }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<footer style="background:white; color:#6c757d; text-align:center; padding:24px; border-top:1px solid #eaeaea;">
+  <p>&copy; 2025 Food Delivery. Все права защищены.</p>
+</footer>
+
+<script>
+(function(){
+  const input = document.getElementById('search-input');
+  const auto = document.getElementById('autocomplete');
+  const btn = document.getElementById('search-button');
+
+  let timer = null;
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    const q = input.value.trim();
+    if (!q) { auto.style.display='none'; auto.innerHTML=''; return; }
+    timer = setTimeout(()=> fetchSuggestions(q), 200);
+  });
+
+  btn.addEventListener('click', ()=> {
+    const q = input.value.trim();
+    if (q) location.href = `/search?query=${encodeURIComponent(q)}`;
+  });
+
+  async function fetchSuggestions(q){
+    try {
+      const res = await fetch(`/search_items?q=${encodeURIComponent(q)}`);
+      if (!res.ok) throw new Error('network');
+      const data = await res.json();
+      renderSuggestions(data);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function renderSuggestions(data){
+    auto.innerHTML = '';
+    const items = data.menu_items || [];
+    const rests = data.restaurants || [];
+
+    if (items.length===0 && rests.length===0){
+      auto.innerHTML = `<div class="item">Совпадений не найдено</div>`;
+      auto.style.display = 'block';
+      return;
+    }
+
+    if (items.length){
+      auto.insertAdjacentHTML('beforeend', `<div class="group-title">🍽️ Блюда</div>`);
+      items.forEach(i => {
+        auto.insertAdjacentHTML('beforeend', `<div class="item" data-url="/menu/${i.id}">${escapeHtml(i.name)}</div>`);
+      });
+    }
+    if (rests.length){
+      auto.insertAdjacentHTML('beforeend', `<div class="group-title">🏠 Рестораны</div>`);
+      rests.forEach(r => {
+        auto.insertAdjacentHTML('beforeend', `<div class="item" data-url="/restaurant/${r.id}">${escapeHtml(r.name)}</div>`);
+      });
+    }
+    auto.style.display = 'block';
+  }
+
+  auto.addEventListener('click', (e) => {
+    const el = e.target.closest('.item');
+    if (!el) return;
+    const url = el.getAttribute('data-url');
+    if (url) location.href = url;
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#autocomplete') && !e.target.closest('#search-input')) {
+      auto.style.display = 'none';
+    }
+  });
+
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]); });
+  }
+})();
+</script>
+</body>
+</html>

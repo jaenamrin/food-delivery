@@ -1,0 +1,431 @@
+{% extends "base.html" %}
+{% block title %}Редактирование профиля{% endblock %}
+
+{% block content %}
+<div class="edit-profile-container">
+    <div class="edit-profile-header">
+        <a href="{{ url_for('main.profile') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Назад в профиль
+        </a>
+        <h1><i class="fas fa-user-edit"></i> Редактирование профиля</h1>
+        <p>Измените свои личные данные</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div class="flash-messages-edit">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" class="edit-profile-form" id="profileForm">
+        {{ form.hidden_tag() }}
+
+        <!-- Поле Имя -->
+        <div class="form-group">
+            <label for="username">
+                <i class="fas fa-user"></i> {{ form.username.label.text }}
+            </label>
+            <div class="input-wrapper">
+                {{ form.username(class="form-input", id="username", placeholder="Введите ваше имя") }}
+                <span class="input-icon"><i class="fas fa-pen"></i></span>
+            </div>
+            {% for error in form.username.errors %}
+                <p class="error-message"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
+            {% endfor %}
+            <small class="input-hint"><i class="fas fa-info-circle"></i> Имя будет отображаться в профиле</small>
+        </div>
+
+        <!-- Поле Телефон -->
+        <div class="form-group">
+            <label for="phone">
+                <i class="fas fa-phone-alt"></i> {{ form.phone.label.text }}
+            </label>
+            <div class="input-wrapper">
+                {{ form.phone(class="form-input", id="phone", placeholder="+7 (999) 123-45-67") }}
+                <span class="input-icon"><i class="fas fa-pen"></i></span>
+            </div>
+            {% for error in form.phone.errors %}
+                <p class="error-message"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
+            {% endfor %}
+            <small class="input-hint"><i class="fas fa-info-circle"></i> Формат: +7 XXX XXX-XX-XX</small>
+        </div>
+
+        <!-- Поле Адрес -->
+        <div class="form-group">
+            <label for="address">
+                <i class="fas fa-map-marker-alt"></i> {{ form.address.label.text }}
+            </label>
+            <div class="input-wrapper">
+                {{ form.address(class="form-input", id="address", placeholder="г. Москва, ул. Пушкина, д. 10, кв. 5") }}
+                <span class="input-icon"><i class="fas fa-pen"></i></span>
+            </div>
+            {% for error in form.address.errors %}
+                <p class="error-message"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
+            {% endfor %}
+            <small class="input-hint"><i class="fas fa-info-circle"></i> Укажите точный адрес для доставки</small>
+        </div>
+
+        <!-- Кнопки действий -->
+        <div class="form-actions">
+            <button type="submit" class="btn-save">
+                <i class="fas fa-save"></i> Сохранить изменения
+            </button>
+            <a href="{{ url_for('main.profile') }}" class="btn-cancel">
+                <i class="fas fa-times"></i> Отмена
+            </a>
+        </div>
+    </form>
+
+    <!-- Дополнительная информация -->
+    <div class="profile-tips">
+        <div class="tip-card">
+            <i class="fas fa-shield-alt"></i>
+            <div>
+                <h4>Безопасность</h4>
+                <p>Ваши данные защищены и не передаются третьим лицам</p>
+            </div>
+        </div>
+        <div class="tip-card">
+            <i class="fas fa-truck"></i>
+            <div>
+                <h4>Быстрая доставка</h4>
+                <p>Укажите актуальный адрес для быстрой доставки</p>
+            </div>
+        </div>
+        <div class="tip-card">
+            <i class="fas fa-gift"></i>
+            <div>
+                <h4>Кэшбэк 10%</h4>
+                <p>Не забудьте про накопленный кэшбэк при заказе</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.edit-profile-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.edit-profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+    text-decoration: none;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #00b83a;
+}
+
+.edit-profile-header h1 {
+    font-size: 2rem;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.edit-profile-header h1 i {
+    color: #00b83a;
+}
+
+.edit-profile-header p {
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+/* Flash сообщения */
+.flash-messages-edit {
+    margin-bottom: 25px;
+}
+
+.flash {
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+
+.flash.success {
+    background: #e8f5e9;
+    color: #00b83a;
+    border-left: 4px solid #00b83a;
+}
+
+.flash.error {
+    background: #ffebee;
+    color: #ff5a5f;
+    border-left: 4px solid #ff5a5f;
+}
+
+/* Форма */
+.edit-profile-form {
+    background: white;
+    border-radius: 24px;
+    padding: 30px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #1a1a1a;
+}
+
+.form-group label i {
+    color: #00b83a;
+    width: 18px;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px 45px 14px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: #ffffff !important;
+    color: #1a1a1a;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #00b83a;
+    box-shadow: 0 0 0 3px rgba(0,184,58,0.1);
+}
+
+.form-input::placeholder {
+    color: #aaa;
+}
+
+.input-icon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #bbb;
+    pointer-events: none;
+}
+
+.error-message {
+    color: #ff5a5f;
+    font-size: 0.8rem;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.input-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #6c757d;
+    font-size: 0.75rem;
+    margin-top: 8px;
+}
+
+.input-hint i {
+    font-size: 10px;
+}
+
+/* Кнопки */
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn-save {
+    flex: 1;
+    padding: 14px 24px;
+    background: #00b83a;
+    color: white;
+    border: none;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+}
+
+.btn-save:hover {
+    background: #008f2c;
+    transform: translateY(-1px);
+}
+
+.btn-cancel {
+    flex: 1;
+    padding: 14px 24px;
+    background: white;
+    color: #6c757d;
+    border: 1px solid #ddd;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+    background: #f8f9fa;
+    border-color: #ccc;
+}
+
+/* Карточки-подсказки */
+.profile-tips {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.tip-card {
+    background: #f8f9fa;
+    border-radius: 16px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s;
+}
+
+.tip-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.tip-card i {
+    font-size: 24px;
+    color: #00b83a;
+}
+
+.tip-card h4 {
+    font-size: 0.85rem;
+    margin: 0 0 4px 0;
+    color: #1a1a1a;
+}
+
+.tip-card p {
+    font-size: 0.7rem;
+    margin: 0;
+    color: #6c757d;
+}
+
+/* Сообщение "Данные сохранены" */
+#saveMessage {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #00b83a;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 40px;
+    font-weight: 600;
+    z-index: 1000;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* Адаптив */
+@media (max-width: 600px) {
+    .edit-profile-form {
+        padding: 20px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .profile-tips {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+    // Сохраняем исходные значения при загрузке страницы
+    const originalData = {
+        username: document.getElementById('username')?.value || '',
+        phone: document.getElementById('phone')?.value || '',
+        address: document.getElementById('address')?.value || ''
+    };
+
+    // Обработка отправки формы
+    document.getElementById('profileForm')?.addEventListener('submit', function(e) {
+        const newData = {
+            username: document.getElementById('username')?.value || '',
+            phone: document.getElementById('phone')?.value || '',
+            address: document.getElementById('address')?.value || ''
+        };
+
+        const hasChanges = (
+            newData.username !== originalData.username ||
+            newData.phone !== originalData.phone ||
+            newData.address !== originalData.address
+        );
+
+        if (!hasChanges) {
+            e.preventDefault();
+            const msgDiv = document.createElement('div');
+            msgDiv.id = 'saveMessage';
+            msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> Данные сохранены';
+            document.body.appendChild(msgDiv);
+            setTimeout(() => {
+                msgDiv.remove();
+            }, 3000);
+        }
+    });
+</script>
+{% endblock %}

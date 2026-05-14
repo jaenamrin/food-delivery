@@ -1,0 +1,380 @@
+{% extends "base.html" %}
+{% block title %}О нас — Food Delivery{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <div class="about-hero">
+        <h1><i class="fas fa-heart"></i> О нашем сервисе</h1>
+        <p>Быстрая и вкусная доставка еды из лучших ресторанов</p>
+    </div>
+
+    <div class="about-grid">
+        <!-- 1. Миссия -->
+        <div class="about-card">
+            <div class="card-icon">
+                <i class="fas fa-bullseye"></i>
+            </div>
+            <h3>Наша миссия</h3>
+            <p>Мы делаем доставку еды быстрой, удобной и доступной для каждого. Более 50 ресторанов-партнеров и тысячи довольных клиентов уже с нами!</p>
+        </div>
+
+        <!-- 2. Быстрая доставка -->
+        <div class="about-card">
+            <div class="card-icon">
+                <i class="fas fa-rocket"></i>
+            </div>
+            <h3>Быстрая доставка</h3>
+            <p>Среднее время доставки — 30-40 минут. Наши курьеры всегда вовремя привезут ваш заказ горячим и свежим.</p>
+        </div>
+
+        <!-- 3. Высокое качество -->
+        <div class="about-card">
+            <div class="card-icon">
+                <i class="fas fa-medal"></i>
+            </div>
+            <h3>Высокое качество</h3>
+            <p>Мы работаем только с проверенными ресторанами, которые используют свежие продукты и соблюдают все стандарты качества.</p>
+        </div>
+
+        <!-- 4. Лучшие цены -->
+        <div class="about-card">
+            <div class="card-icon">
+                <i class="fas fa-gem"></i>
+            </div>
+            <h3>Лучшие цены</h3>
+            <p>Регулярные акции, скидки до 20% и кэшбэк 10% на заказы. Подпишись на рассылку, чтобы не пропустить выгодные предложения.</p>
+        </div>
+
+        <!-- 5. Круглосуточная поддержка (НОВАЯ) -->
+        <div class="about-card">
+            <div class="card-icon">
+                <i class="fas fa-headset"></i>
+            </div>
+            <h3>Поддержка 24/7</h3>
+            <p>Наша служба поддержки работает круглосуточно. Мы всегда на связи и готовы помочь решить любой вопрос или проблему с заказом.</p>
+        </div>
+
+        <!-- 6. Удобное приложение (НОВАЯ) -->
+        <div class="about-card">
+            <div class="card-icon">
+                <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h3>Мобильное приложение</h3>
+            <p>Заказывайте еду с телефона — наше приложение доступно для iOS и Android. Следите за статусом заказа в реальном времени.</p>
+        </div>
+    </div>
+
+    <!-- Статистика -->
+    <div class="stats-section">
+        <div class="stat-item">
+            <div class="stat-number">50+</div>
+            <div class="stat-label">Ресторанов</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">10 000+</div>
+            <div class="stat-label">Довольных клиентов</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">30 мин</div>
+            <div class="stat-label">Средняя доставка</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">Поддержка</div>
+        </div>
+    </div>
+
+    <!-- Контакты -->
+    <div class="contacts-section">
+        <h2><i class="fas fa-address-card"></i> Контакты</h2>
+        <div class="contacts-grid">
+            <div class="contact-item">
+                <i class="fas fa-phone-alt"></i>
+                <div>
+                    <strong>Телефон</strong>
+                    <p>+7 (999) 123-45-67</p>
+                </div>
+            </div>
+            <div class="contact-item">
+                <i class="fas fa-envelope"></i>
+                <div>
+                    <strong>Email</strong>
+                    <p>info@fooddelivery.ru</p>
+                </div>
+            </div>
+            <div class="contact-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <div>
+                    <strong>Адрес</strong>
+                    <p>г. Мирный, ул. Ленина, 15</p>
+                </div>
+            </div>
+            <div class="contact-item">
+                <i class="fas fa-clock"></i>
+                <div>
+                    <strong>Часы работы</strong>
+                    <p>Ежедневно 09:00 - 23:00</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Соцсети -->
+    <div class="social-section">
+        <h2><i class="fas fa-share-alt"></i> Мы в соцсетях</h2>
+        <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-telegram"></i> Telegram</a>
+            <a href="#" class="social-link"><i class="fab fa-vk"></i> VK</a>
+            <a href="#" class="social-link"><i class="fab fa-instagram"></i> Instagram</a>
+            <a href="#" class="social-link"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+        </div>
+    </div>
+
+    <!-- Карта -->
+    <div class="map-section">
+        <h2><i class="fas fa-map"></i> Мы на карте</h2>
+        <div class="map-placeholder">
+            <i class="fas fa-map-marker-alt"></i>
+            <p>г. Мирный, ул. Ленина, 15</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.about-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* Герой-секция */
+.about-hero {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.about-hero h1 {
+    font-size: 2.5rem;
+    color: #1a1a1a;
+    margin-bottom: 15px;
+}
+
+.about-hero h1 i {
+    color: #00b83a;
+    margin-right: 12px;
+}
+
+.about-hero p {
+    font-size: 1.2rem;
+    color: #6c757d;
+}
+
+/* Сетка карточек - теперь 3 колонки */
+.about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    margin-bottom: 50px;
+}
+
+.about-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px 24px;
+    text-align: center;
+    border: 1px solid #eaeaea;
+    transition: all 0.3s ease;
+}
+
+.about-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.card-icon {
+    width: 70px;
+    height: 70px;
+    background: #e8f5e9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.card-icon i {
+    font-size: 32px;
+    color: #00b83a;
+}
+
+.about-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+    color: #1a1a1a;
+}
+
+.about-card p {
+    color: #6c757d;
+    line-height: 1.5;
+}
+
+/* Статистика */
+.stats-section {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 30px;
+    background: #f8f9fa;
+    border-radius: 24px;
+    padding: 40px 24px;
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #00b83a;
+}
+
+.stat-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Контакты */
+.contacts-section {
+    background: white;
+    border-radius: 24px;
+    padding: 30px;
+    border: 1px solid #eaeaea;
+    margin-bottom: 40px;
+}
+
+.contacts-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+    color: #1a1a1a;
+}
+
+.contacts-section h2 i {
+    color: #00b83a;
+    margin-right: 10px;
+}
+
+.contacts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 16px;
+}
+
+.contact-item i {
+    font-size: 28px;
+    color: #00b83a;
+}
+
+.contact-item strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #1a1a1a;
+}
+
+.contact-item p {
+    color: #6c757d;
+    margin: 0;
+}
+
+/* Соцсети */
+.social-section {
+    background: white;
+    border-radius: 24px;
+    padding: 30px;
+    border: 1px solid #eaeaea;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.social-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+    color: #1a1a1a;
+}
+
+.social-section h2 i {
+    color: #00b83a;
+    margin-right: 10px;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: #f8f9fa;
+    color: #1a1a1a;
+    text-decoration: none;
+    border-radius: 40px;
+    transition: all 0.2s;
+}
+
+.social-link:hover {
+    background: #00b83a;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Карта */
+.map-section {
+    background: white;
+    border-radius: 24px;
+    padding: 30px;
+    border: 1px solid #eaeaea;
+    text-align: center;
+}
+
+.map-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+    color: #1a1a1a;
+}
+
+.map-section h2 i {
+    color: #00b83a;
+    margin-right: 10px;
+}
+
+.map-placeholder {
+    background: #f8f9fa;
+    border-radius: 20px;
+    padding: 60px;
+    text-align: center;
+}
+
+.map-placeholder i {
+    font-size: 50px;
+    color: #00b83a;
+    margin-bottom: 15px;
+}
+
+.map-placeholder p {
+    color: #6c757d;
+    font-size: 1rem;
+}
+</style>
+{% endblock %}

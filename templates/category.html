@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% block title %}{{ category_title }} — Food Delivery{% endblock %}
+
+{% block content %}
+<div class="category-page">
+    <!-- КНОПКА НАЗАД НА ГЛАВНУЮ -->
+    <div class="back-link-wrapper">
+        <a href="{{ url_for('main.index') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Назад на главную
+        </a>
+    </div>
+
+    <!-- Заголовок категории -->
+    <div class="category-header">
+        <h1>
+            {% if current_category == 'pizza' %}
+            {% elif current_category == 'burger' %}
+            {% elif current_category == 'sushi' %}
+            {% elif current_category == 'breakfast' %}
+            {% elif current_category == 'dessert' %}
+            {% else %}
+            {% endif %}
+            {{ category_title }}
+        </h1>
+        <p>Рестораны, в которых можно заказать {{ category_title|lower }}</p>
+    </div>
+
+    <!-- Список ресторанов -->
+    {% if restaurants %}
+        <div class="restaurants-grid">
+            {% for restaurant in restaurants %}
+            <div class="restaurant-card">
+                <a href="{{ url_for('main.restaurant', restaurant_id=restaurant.id) }}">
+                    <img src="{{ url_for('static', filename=restaurant.image) }}" alt="{{ restaurant.name }}">
+                    <div class="restaurant-card-content">
+                        <h3>{{ restaurant.name }}</h3>
+                        <div class="restaurant-meta">
+                            <span><i class="fas fa-map-marker-alt"></i> {{ restaurant.city }}</span>
+                            <span><i class="fas fa-clock"></i> {{ restaurant.delivery_time }} мин</span>
+                        </div>
+                        <button class="view-menu-btn">В меню <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-category">
+            <i class="fas fa-utensils"></i>
+            <h3>Ресторанов не найдено</h3>
+            <p>В этой категории пока нет ресторанов</p>
+            <a href="{{ url_for('main.index') }}" class="btn-primary">На главную</a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.category-page {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+}
+
+/* Кнопка назад */
+.back-link-wrapper {
+    margin: 20px 0 10px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 8px 0;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #00b83a;
+}
+
+/* Заголовок категории */
+.category-header {
+    text-align: center;
+    margin: 30px 0 40px;
+}
+
+.category-header h1 {
+    font-size: 2.5rem;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+}
+
+.category-header p {
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+/* Сетка ресторанов */
+.restaurants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+/* Карточка ресторана */
+.restaurant-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.restaurant-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.restaurant-card a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.restaurant-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.restaurant-card-content {
+    padding: 18px;
+}
+
+.restaurant-card-content h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.restaurant-meta {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.restaurant-meta i {
+    margin-right: 4px;
+}
+
+.view-menu-btn {
+    width: 100%;
+    background: #00b83a;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.view-menu-btn:hover {
+    background: #008f2c;
+    transform: translateY(-2px);
+}
+
+/* Пустая страница */
+.empty-category {
+    text-align: center;
+    padding: 60px;
+    background: white;
+    border-radius: 24px;
+}
+
+.empty-category i {
+    font-size: 60px;
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+.empty-category h3 {
+    margin-bottom: 10px;
+    color: #1a1a1a;
+}
+
+.empty-category p {
+    color: #6c757d;
+    margin-bottom: 20px;
+}
+
+.btn-primary {
+    background: #00b83a;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 40px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .category-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .restaurants-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

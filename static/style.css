@@ -1,0 +1,677 @@
+
+/* ----- БАЗА ----- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #white;
+    color: #1a1a1a;
+}
+
+/* ----- ШАПКА  ----- */
+header {
+    background: white !important;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+    padding: 12px 32px !important;
+    border-bottom: 1px solid #eaeaea;
+}
+
+header a {
+    color: #1a1a1a !important;
+    transition: all 0.2s ease;
+}
+
+.logo-text {
+    font-weight: 700;
+    font-size: 1.3rem;
+    background: linear-gradient(135deg, #00b83a, #008f2c);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+}
+
+/* Навигация */
+nav a {
+    border-radius: 30px;
+    font-weight: 500;
+}
+
+nav a:hover {
+    background: #f0f0f0 !important;
+    color: #00b83a !important;
+}
+
+/* ----- ПОИСК ----- */
+.search-input {
+    background: #f3f3f3 !important;
+    border: 1px solid transparent !important;
+    border-radius: 40px !important;
+    color: #1a1a1a !important;
+    font-size: 15px !important;
+    height: 48px !important;
+    padding-left: 20px !important;
+}
+
+.search-input:focus {
+    border-color: #00b83a !important;
+    background: white !important;
+    box-shadow: 0 0 0 3px rgba(0,184,58,0.1) !important;
+}
+
+.search-btn {
+    background: #00b83a !important;
+    border-radius: 40px !important;
+    width: 48px !important;
+    height: 48px !important;
+}
+
+.search-btn:hover {
+    background: #008f2c !important;
+    transform: scale(1.02);
+}
+
+/* ----- СЕКЦИЯ АКЦИЙ (КРАСИВЫЕ КАРТОЧКИ) ----- */
+.promotions {
+    max-width: 1300px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.promotions h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.promotions h2 i {
+    color: #00b83a;
+    font-size: 28px;
+}
+
+.promo-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: center;
+}
+
+.promo-card {
+    background: white;
+    border-radius: 24px;
+    width: 320px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid #eaeaea;
+    cursor: pointer;
+}
+
+.promo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 35px rgba(0,0,0,0.1);
+}
+
+.promo-icon {
+    font-size: 48px;
+    text-align: center;
+    padding: 30px 20px 20px;
+}
+
+.promo-content {
+    padding: 0 20px 20px;
+    text-align: center;
+}
+
+.promo-content h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #1a1a1a;
+}
+
+.promo-content p {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+.promo-badge {
+    display: inline-block;
+    background: #f0f0f0;
+    padding: 6px 16px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+.promo-footer {
+    background: #f8f9fa;
+    padding: 12px;
+    text-align: center;
+    border-top: 1px solid #eaeaea;
+}
+
+.promo-footer a {
+    color: #00b83a;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* ----- РЕСТОРАНЫ ----- */
+.restaurants-section {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.restaurants-section h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.restaurants-section h2 i {
+    color: #00b83a;
+}
+
+.restaurants {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.restaurant {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid #eaeaea;
+    cursor: pointer;
+}
+
+.restaurant:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 35px rgba(0,0,0,0.1);
+}
+
+.restaurant img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.restaurant h3 {
+    padding: 16px 16px 8px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.restaurant p {
+    padding: 0 16px;
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+.delivery-time {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+.delivery-time i {
+    font-size: 12px;
+}
+
+.restaurant .btn {
+    margin: 16px;
+    padding: 10px 20px;
+    background: #00b83a;
+    color: white;
+    border-radius: 40px;
+    display: inline-block;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.restaurant .btn:hover {
+    background: #008f2c;
+}
+
+/* ----- МЕНЮ БЛЮД ----- */
+.menu-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.menu-item {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid #eaeaea;
+}
+
+.menu-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.menu-item img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+}
+
+.menu-item h3 {
+    padding: 16px 16px 8px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.menu-item p {
+    padding: 0 16px;
+    color: #00b83a;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.menu-item button {
+    margin: 16px;
+    width: calc(100% - 32px);
+    background: #00b83a;
+    color: white;
+    border-radius: 40px;
+    padding: 10px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.menu-item button:hover {
+    background: #008f2c;
+    transform: translateY(-1px);
+}
+
+/* ----- КОРЗИНА ----- */
+.cart-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.cart-item {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid #eaeaea;
+}
+
+.cart-total {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid #eaeaea;
+}
+
+.btn-danger {
+    background: white;
+    color: #ff5a5f;
+    border: 1px solid #ff5a5f;
+    border-radius: 40px;
+    padding: 8px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-danger:hover {
+    background: #ff5a5f;
+    color: white;
+}
+
+/* ----- ФОРМЫ ----- */
+.form-container {
+    background: white;
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 500px;
+    margin: 60px auto;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+    border: 1px solid #eaeaea;
+}
+
+.form-container h2 {
+    margin-bottom: 24px;
+    font-size: 1.8rem;
+}
+
+.form-container input {
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.form-container input:focus {
+    border-color: #00b83a;
+    outline: none;
+}
+
+.form-container button {
+    background: #00b83a;
+    color: white;
+    border-radius: 40px;
+    padding: 14px;
+    width: 100%;
+    border: none;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.form-container button:hover {
+    background: #008f2c;
+}
+
+/* ----- ПРОФИЛЬ ----- */
+.profile-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid #eaeaea;
+    margin-bottom: 24px;
+}
+
+/* ----- ФУТЕР ----- */
+footer {
+    background: white !important;
+    color: #6c757d !important;
+    border-top: 1px solid #eaeaea;
+    padding: 24px !important;
+    text-align: center;
+}
+
+/* ----- ПУСТАЯ КОРЗИНА ----- */
+.empty-cart {
+    text-align: center;
+    padding: 60px 40px;
+    background: white;
+    border-radius: 24px;
+    border: 1px solid #eaeaea;
+    max-width: 500px;
+    margin: 60px auto;
+}
+
+.empty-cart h2 {
+    font-size: 1.8rem;
+    margin-bottom: 12px;
+    color: #1a1a1a;
+}
+
+.empty-cart p {
+    font-size: 1rem;
+    color: #6c757d;
+    margin-bottom: 24px;
+    font-weight: normal;
+}
+
+.empty-cart .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #00b83a;
+    color: white;
+    border-radius: 40px;
+    text-decoration: none;
+}
+
+/* ----- АДАПТИВ ----- */
+@media (max-width: 768px) {
+    .restaurants {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+
+    .menu-items {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+
+    .promo-card {
+        width: 280px;
+    }
+}
+/* ============================================ */
+/* ДОПОЛНЕНИЯ: БЕЛЫЙ ФОН, НОВЫЕ КНОПКИ, АКЦИИ   */
+/* ============================================ */
+
+/* Белый фон для всего сайта */
+body {
+    background: white !important;
+    color: #1a1a1a !important;
+}
+
+/* Затемнение логотипа (делаем черным) */
+header img {
+    filter: brightness(0);
+    transition: filter 0.2s;
+}
+
+/* Шапка белая */
+header {
+    background: white !important;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+    border-bottom: 1px solid #eaeaea;
+}
+
+/* Все кнопки как в Яндекс Еде (зеленые, скругленные) */
+.btn, .form-button, button[type="submit"], .restaurant .btn {
+    background: #00b83a !important;
+    color: white !important;
+    border-radius: 40px !important;
+    padding: 12px 24px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.btn:hover, .form-button:hover, button[type="submit"]:hover, .restaurant .btn:hover {
+    background: #008f2c !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Карточки ресторанов (белые) */
+.restaurant {
+    background: white !important;
+    border: 1px solid #eaeaea !important;
+}
+
+.restaurant h3, .restaurant p {
+    color: #1a1a1a !important;
+}
+
+/* Время доставки с иконкой */
+.delivery-time {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 8px 16px !important;
+    color: #6c757d !important;
+    font-size: 0.85rem !important;
+}
+
+/* Акции - шире */
+.promo-card {
+    width: 350px !important;
+    background: white !important;
+    border-radius: 24px !important;
+    border: 1px solid #eaeaea !important;
+}
+
+/* Все карточки и контейнеры белые */
+.form-container, .cart-item, .cart-total, .card, .empty-cart {
+    background: white !important;
+    border: 1px solid #eaeaea !important;
+    color: #1a1a1a !important;
+}
+
+/* Заголовки черные */
+h1, h2, h3, .promotions h2, .restaurants-section h2 {
+    color: #1a1a1a !important;
+}
+
+/* Кнопка удаления из корзины */
+.btn-danger {
+    background: white !important;
+    color: #ff5a5f !important;
+    border: 1px solid #ff5a5f !important;
+    border-radius: 40px !important;
+    padding: 8px 20px !important;
+}
+
+.btn-danger:hover {
+    background: #ff5a5f !important;
+    color: white !important;
+}
+
+/* Текст в карточках */
+.menu-item h3, .menu-item p {
+    color: #1a1a1a !important;
+}
+
+.menu-item p {
+    color: #00b83a !important;
+    font-weight: 700 !important;
+}
+
+/* Ссылки в навигации */
+nav a {
+    color: #1a1a1a !important;
+}
+
+nav a:hover {
+    color: #00b83a !important;
+    background: #f0f0f0 !important;
+}
+
+/* Футер */
+footer {
+    background: white !important;
+    color: #6c757d !important;
+    border-top: 1px solid #eaeaea !important;
+}
+
+/* Flash сообщения */
+.flash.success {
+    background: #00b83a !important;
+    color: white !important;
+}
+
+.flash.error {
+    background: #ff5a5f !important;
+    color: white !important;
+}
+
+.flash.warning {
+    background: #ffa500 !important;
+    color: white !important;
+}
+/* ====== КНОПКИ КАТЕГОРИЙ ====== */
+.categories-filter {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+}
+
+.category-btn {
+    background: #f5f5f5;
+    color: #1a1a1a;
+    padding: 10px 24px;
+    border-radius: 40px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.category-btn i {
+    font-size: 1rem;
+}
+
+.category-btn:hover {
+    background: #e0e0e0;
+    transform: translateY(-1px);
+}
+
+.category-btn.active {
+    background: #00b83a;
+    color: white;
+}
+.category-dessert {
+     background: #fce4ec;
+     color: #e91e63;
+     padding: 5px 12px;
+     border-radius: 30px;
+     font-size: 0.75rem;
+     font-weight: 500;
+     display: inline-block;
+}
+.menu-card {
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.menu-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.add-to-cart-btn {
+    cursor: pointer;
+    z-index: 10;
+    position: relative;
+}

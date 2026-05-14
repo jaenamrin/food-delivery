@@ -1,0 +1,440 @@
+{% extends "base.html" %}
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <h1 style="text-align: center; margin-bottom: 30px; color: #1a1a1a;">
+        <i class="fas fa-user-circle"></i> Личный кабинет
+    </h1>
+
+    <!-- Флеш-сообщения -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}" style="margin-bottom: 20px; padding: 12px; border-radius: 12px;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Личные данные -->
+    <div class="profile-card">
+        <h2><i class="fas fa-user"></i> Личные данные</h2>
+        <div class="info-row">
+            <span class="info-label"><i class="fas fa-tag"></i> Имя:</span>
+            <span class="info-value">{{ user.username }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label"><i class="fas fa-envelope"></i> Email:</span>
+            <span class="info-value">{{ user.email }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label"><i class="fas fa-phone"></i> Телефон:</span>
+            <span class="info-value">{{ user.phone or "Не указан" }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label"><i class="fas fa-map-marker-alt"></i> Адрес:</span>
+            <span class="info-value">{{ user.address or "Не указан" }}</span>
+        </div>
+    </div>
+
+    <!-- Баланс кэшбэка (белый/зеленый, не голубой!) -->
+    <div class="cashback-card">
+        <div class="cashback-icon">
+            <i class="fas fa-coins"></i>
+        </div>
+        <div class="cashback-content">
+            <h3>Баланс кэшбэка</h3>
+            <div class="cashback-amount">{{ "%.0f"|format(user.cashback_balance or 0) }} ₽</div>
+            <p>Можно использовать для оплаты заказов</p>
+        </div>
+    </div>
+
+    <!-- Кнопки действий -->
+    <div class="action-buttons">
+        <a class="btn btn-primary" href="{{ url_for('main.edit_profile') }}">
+            <i class="fas fa-edit"></i> Редактировать профиль
+        </a>
+        <a class="btn btn-logout" href="{{ url_for('main.logout') }}">
+            <i class="fas fa-sign-out-alt"></i> Выйти из аккаунта
+        </a>
+    </div>
+
+    <!-- История заказов -->
+<div class="orders-card">
+    <h2><i class="fas fa-history"></i> История заказов</h2>
+    {% if orders %}
+        {% for order in orders %}
+            <div class="order-item">
+                <div class="order-header">
+                    <div class="order-number">
+                        <i class="fas fa-receipt"></i> Заказ №{{ order.id }}
+                    </div>
+                    <div class="order-status {{ 'active' if order.is_active else 'completed' }}">
+                        <i class="fas {{ 'fa-truck' if order.is_active else 'fa-check-circle' }}"></i>
+                        {{ "В пути" if order.is_active else "Доставлен" }}
+                    </div>
+                </div>
+                <div class="order-total">
+                    <strong>Сумма:</strong> {{ order.total_price }} ₽
+                </div>
+
+                <!-- КНОПКА ОПЛАТЫ (если заказ не оплачен) -->
+                {% if not order.is_paid %}
+                <div class="order-pay-btn">
+                    <a href="{{ url_for('main.payment_page', order_id=order.id) }}" class="pay-now-btn">
+                        <i class="fas fa-credit-card"></i> Оплатить сейчас
+                    </a>
+                </div>
+                {% endif %}
+
+                <!-- СТАТУС ОПЛАТЫ (ВСТАВИТЬ СЮДА) -->
+                {% if not order.is_paid %}
+                    <div class="payment-status unpaid">
+                        <i class="fas fa-clock"></i> Ожидает оплаты
+                    </div>
+                {% else %}
+                    <div class="payment-status paid">
+                        <i class="fas fa-check-circle"></i> Оплачен
+                    </div>
+                {% endif %}
+
+                <div class="order-address">
+                    <i class="fas fa-map-pin"></i> {{ order.address }}
+                </div>
+                <div class="order-items">
+                    {% for item in order.items %}
+                        <div class="order-item-row">
+                            <span>{{ item.menu_item.name }}</span>
+                            <span>×{{ item.quantity }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="order-total">
+                    <strong>Сумма:</strong> {{ order.total_price }} ₽
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-orders">
+            <i class="fas fa-shopping-bag"></i>
+            <p>У вас пока нет заказов</p>
+            <a href="{{ url_for('main.index') }}" class="btn btn-small">Выбрать ресторан</a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.profile-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Карточка личных данных */
+.profile-card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 20px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.profile-card h2 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-row {
+    display: flex;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    width: 120px;
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.info-value {
+    flex: 1;
+    color: #1a1a1a;
+}
+
+/* Карточка кэшбэка (белая с зеленым акцентом, НЕ ГОЛУБАЯ!) */
+.cashback-card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #eaeaea;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.cashback-icon {
+    width: 60px;
+    height: 60px;
+    background: #e8f5e9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cashback-icon i {
+    font-size: 28px;
+    color: #00b83a;
+}
+
+.cashback-content {
+    flex: 1;
+}
+
+.cashback-content h3 {
+    font-size: 1rem;
+    color: #6c757d;
+    margin: 0 0 5px 0;
+}
+
+.cashback-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #00b83a;
+    line-height: 1;
+}
+
+.cashback-content p {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin: 5px 0 0 0;
+}
+
+/* Кнопки действий */
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 12px 24px;
+    border-radius: 40px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: #00b83a;
+    color: white;
+    flex: 1;
+    justify-content: center;
+}
+
+.btn-primary:hover {
+    background: #008f2c;
+    transform: translateY(-1px);
+}
+
+.btn-logout {
+    background: white;
+    color: #ff5a5f;
+    border: 1px solid #ff5a5f;
+    flex: 1;
+    justify-content: center;
+}
+
+.btn-logout:hover {
+    background: #ff5a5f;
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* История заказов */
+.orders-card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.orders-card h2 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.order-item {
+    border: 1px solid #eaeaea;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    transition: all 0.2s;
+}
+
+.order-item:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.order-number {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #1a1a1a;
+}
+
+.order-number i {
+    color: #00b83a;
+    margin-right: 6px;
+}
+
+.order-status {
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.order-status.active {
+    background: #fff3e0;
+    color: #ff9800;
+}
+
+.order-status.completed {
+    background: #e8f5e9;
+    color: #00b83a;
+}
+
+.order-address {
+    color: #6c757d;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.order-items {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 12px;
+    margin: 12px 0;
+}
+
+.order-item-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    color: #1a1a1a;
+    font-size: 0.9rem;
+}
+
+.order-total {
+    text-align: right;
+    padding-top: 8px;
+    border-top: 1px solid #eaeaea;
+    font-size: 1rem;
+    color: #1a1a1a;
+}
+
+.order-total strong {
+    color: #1a1a1a;
+}
+
+/* Пустая история */
+.empty-orders {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.empty-orders i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: #ccc;
+}
+
+.btn-small {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 8px 20px;
+    background: #00b83a;
+    color: white;
+    border-radius: 40px;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.btn-small:hover {
+    background: #008f2c;
+}
+</style>
+{% endblock %}
+.payment-status {
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-top: 8px;
+}
+
+.payment-status.unpaid {
+    background: #fff3e0;
+    color: #ff9800;
+}
+
+.payment-status.paid {
+    background: #e8f5e9;
+    color: #00b83a;
+}
+    .order-pay-btn {
+    margin-top: 15px;
+}
+.pay-now-btn {
+    display: inline-block;
+    background: #00b83a;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 40px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.pay-now-btn:hover {
+    background: #008f2c;
+    transform: translateY(-2px);
+}

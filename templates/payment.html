@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+{% block title %}Оплата заказа{% endblock %}
+
+{% block content %}
+<div class="payment-container">
+    <div class="back-link-wrapper">
+        <a href="{{ url_for('main.profile') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Вернуться в профиль
+        </a>
+    </div>
+
+    <div class="payment-card">
+        <div class="payment-header">
+            <i class="fas fa-credit-card"></i>
+            <h1>Оплата заказа №{{ order.id }}</h1>
+        </div>
+
+        <div class="order-summary">
+            <h3>Детали заказа</h3>
+            <div class="summary-row">
+                <span>Сумма к оплате:</span>
+                <strong>{{ order.total_price }} ₽</strong>
+            </div>
+            <div class="summary-row">
+                <span>Способ доставки:</span>
+                <span>Курьер</span>
+            </div>
+            <div class="summary-row">
+                <span>Адрес:</span>
+                <span>{{ order.address }}</span>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('main.process_payment', order_id=order.id) }}" class="payment-form">
+            <h3><i class="fas fa-lock"></i> Данные карты</h3>
+            
+            <div class="form-group">
+                <label>Номер карты</label>
+                <div class="card-input-wrapper">
+                    <i class="fas fa-credit-card"></i>
+                    <input type="text" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19" 
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\d{4})/g, '$1 ').trim();"
+                           class="card-input" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Держатель карты</label>
+                <div class="card-input-wrapper">
+                    <i class="fas fa-user"></i>
+                    <input type="text" name="card_holder" placeholder="IVAN IVANOV" 
+                           class="card-input" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group half">
+                    <label>Срок действия</label>
+                    <input type="text" name="expiry" placeholder="MM/YY" maxlength="5"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\d{2})(\d{0,2})/, function(m, p1, p2) { return p2 ? p1 + '/' + p2 : p1; });"
+                           class="card-input" required>
+                </div>
+                <div class="form-group half">
+                    <label>CVV</label>
+                    <input type="password" name="cvv" placeholder="123" maxlength="3"
+                           class="card-input" required>
+                </div>
+            </div>
+
+            <div class="payment-warning">
+                <i class="fas fa-shield-alt"></i>
+                <span>Тестовый режим: введите любые данные в правильном формате</span>
+            </div>
+
+            <button type="submit" class="pay-btn">
+                <i class="fas fa-credit-card"></i> Оплатить {{ order.total_price }} ₽
+            </button>
+        </form>
+
+        <div class="secure-badges">
+            <span><i class="fas fa-lock"></i> Безопасная оплата</span>
+            <span><i class="fab fa-cc-visa"></i> Visa</span>
+            <span><i class="fab fa-cc-mastercard"></i> Mastercard</span>
+            <span><i class="fab fa-cc-mir"></i> МИР</span>
+        </div>
+    </div>
+</div>
+
+<style>
+.payment-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.back-link-wrapper {
+    margin-bottom: 20px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #00b83a;
+}
+
+.payment-card {
+    background: white;
+    border-radius: 32px;
+    padding: 32px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    border: 1px solid #eaeaea;
+}
+
+.payment-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.payment-header i {
+    font-size: 48px;
+    color: #00b83a;
+    margin-bottom: 15px;
+}
+
+.payment-header h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #1a1a1a;
+}
+
+.order-summary {
+    background: #f8f9fa;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.order-summary h3 {
+    margin: 0 0 15px 0;
+    font-size: 1rem;
+    color: #1a1a1a;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.summary-row:last-child {
+    border-bottom: none;
+}
+
+.payment-form h3 {
+    font-size: 1rem;
+    margin-bottom: 20px;
+    color: #1a1a1a;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.card-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.card-input-wrapper i {
+    position: absolute;
+    left: 15px;
+    color: #6c757d;
+}
+
+.card-input {
+    width: 100%;
+    padding: 14px 15px 14px 45px;
+    border: 1px solid #ddd;
+    border-radius: 16px;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.card-input:focus {
+    outline: none;
+    border-color: #00b83a;
+    box-shadow: 0 0 0 3px rgba(0,184,58,0.1);
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-group.half {
+    flex: 1;
+}
+
+.payment-warning {
+    background: #fff3e0;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+    color: #ff9800;
+    font-size: 0.85rem;
+}
+
+.pay-btn {
+    width: 100%;
+    background: #00b83a;
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 48px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.pay-btn:hover {
+    background: #008f2c;
+    transform: translateY(-2px);
+}
+
+.secure-badges {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #eaeaea;
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+.secure-badges i {
+    margin-right: 5px;
+}
+
+@media (max-width: 480px) {
+    .payment-card {
+        padding: 20px;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .secure-badges {
+        flex-wrap: wrap;
+    }
+}
+</style>
+{% endblock %}
