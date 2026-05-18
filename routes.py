@@ -225,18 +225,20 @@ def edit_profile():
 @main_bp.route("/search_items")
 def search_items():
     query = request.args.get("q", "").strip()
-    print(f"🔍 AJAX поиск: '{query}'")
 
-    if not query or len(query) < 1:  # Разрешаем поиск по 1+ символам
+    if not query or len(query) < 1:
         return jsonify({"menu_items": [], "restaurants": []})
 
-    # Поиск с учетом частичных совпадений
+    query_lower = query.lower()
+
+    # Поиск блюд
     menu_items = MenuItem.query.filter(
-        MenuItem.name.ilike(f"%{query}%")
+        db.func.lower(MenuItem.name).contains(query_lower)
     ).limit(10).all()
 
+    # Поиск ресторанов
     restaurants = Restaurant.query.filter(
-        Restaurant.name.ilike(f"%{query}%")
+        db.func.lower(Restaurant.name).contains(query_lower)
     ).limit(10).all()
 
     return jsonify({
@@ -249,16 +251,20 @@ def search_items():
 def search():
     query = request.args.get('query', '').strip()
 
-    if not query or len(query) < 1:  # Разрешаем поиск по 1+ символам
+    if not query or len(query) < 1:
         return redirect(url_for('main.index'))
 
-    # Поиск блюд и ресторанов
+    # Приводим запрос к нижнему регистру для сравнения
+    query_lower = query.lower()
+
+    # Поиск блюд (регистронезависимый + частичное совпадение)
     menu_items = MenuItem.query.filter(
-        MenuItem.name.ilike(f"%{query}%")
+        db.func.lower(MenuItem.name).contains(query_lower)
     ).all()
 
+    # Поиск ресторанов (регистронезависимый + частичное совпадение)
     restaurants = Restaurant.query.filter(
-        Restaurant.name.ilike(f"%{query}%")
+        db.func.lower(Restaurant.name).contains(query_lower)
     ).all()
 
     return render_template('search_results.html',

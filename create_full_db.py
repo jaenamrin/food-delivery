@@ -4,7 +4,7 @@ import sqlite3
 from werkzeug.security import generate_password_hash
 
 # Удаляем старый файл БД, если есть
-db_path = 'food.db'
+db_path = 'instance/food.db'
 if os.path.exists(db_path):
     os.remove(db_path)
     print(f"🗑️ Старый файл {db_path} удалён.")
