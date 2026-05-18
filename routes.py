@@ -205,39 +205,31 @@ def profile():
         order.is_active = now < order.created_at + timedelta(minutes=max_delivery)
     return render_template('profile.html', user=current_user, orders=orders)
 
-# --- Edit profile ---
-# --- Edit profile ---
-@main_bp.route('/edit_profile', methods=['GET', 'POST'])
-@login_required
-def edit_profile():
-    form = ProfileForm(obj=current_user)
-    if form.validate_on_submit():
-        current_user.username = form.username.data
-        current_user.phone = form.phone.data
-        current_user.address = form.address.data
-        db.session.commit()
-        # УБИРАЕМ ЭТУ СТРОКУ (или закомментируем):
-        # flash('Данные обновлены!', 'success')
-        return redirect(url_for('main.profile'))
-    return render_template('edit_profile.html', form=form)
-
-
+# --- Поиск (автокомплит) ---
 @main_bp.route("/search_items")
 def search_items():
-    query = request.args.get("q", "").strip()
+    query = request.args.get("q", "").strip().lower()
 
     if not query:
         return jsonify({"menu_items": [], "restaurants": []})
 
-    # Поиск блюд (регистронезависимый, частичное совпадение)
-    menu_items = MenuItem.query.filter(
-        MenuItem.name.ilike(f"%{query}%")
-    ).limit(10).all()
+    # Получаем все блюда и ищем в Python
+    all_items = MenuItem.query.all()
+    menu_items = []
+    for item in all_items:
+        if query in item.name.lower():
+            menu_items.append(item)
+            if len(menu_items) >= 10:
+                break
 
-    # Поиск ресторанов
-    restaurants = Restaurant.query.filter(
-        Restaurant.name.ilike(f"%{query}%")
-    ).limit(10).all()
+    # Получаем все рестораны и ищем в Python
+    all_restaurants = Restaurant.query.all()
+    restaurants = []
+    for r in all_restaurants:
+        if query in r.name.lower():
+            restaurants.append(r)
+            if len(restaurants) >= 10:
+                break
 
     return jsonify({
         "menu_items": [{"id": item.id, "name": item.name} for item in menu_items],
@@ -245,22 +237,27 @@ def search_items():
     })
 
 
+# --- Поиск (страница результатов) ---
 @main_bp.route('/search')
 def search():
-    query = request.args.get('query', '').strip()
+    query = request.args.get('query', '').strip().lower()
 
     if not query:
         return redirect(url_for('main.index'))
 
-    # Поиск блюд (регистронезависимый, частичное совпадение)
-    menu_items = MenuItem.query.filter(
-        MenuItem.name.ilike(f"%{query}%")
-    ).all()
+    # Ищем блюда
+    all_items = MenuItem.query.all()
+    menu_items = []
+    for item in all_items:
+        if query in item.name.lower():
+            menu_items.append(item)
 
-    # Поиск ресторанов
-    restaurants = Restaurant.query.filter(
-        Restaurant.name.ilike(f"%{query}%")
-    ).all()
+    # Ищем рестораны
+    all_restaurants = Restaurant.query.all()
+    restaurants = []
+    for r in all_restaurants:
+        if query in r.name.lower():
+            restaurants.append(r)
 
     return render_template('search_results.html',
                            query=query,
