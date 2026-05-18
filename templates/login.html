@@ -9,15 +9,11 @@
 
         <label>{{ form.email.label }}</label>
         {{ form.email(class="form-input") }}
-        {% for error in form.email.errors %}
-            <p class="error">{{ error }}</p>
-        {% endfor %}
+        <!-- Убрали ошибки формы -->
 
         <label>{{ form.password.label }}</label>
         {{ form.password(class="form-input") }}
-        {% for error in form.password.errors %}
-            <p class="error">{{ error }}</p>
-        {% endfor %}
+        <!-- Убрали ошибки формы -->
 
         {{ form.submit(class="form-button") }}
     </form>
