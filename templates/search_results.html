@@ -2,63 +2,346 @@
 {% block title %}Результаты поиска — {{ query }}{% endblock %}
 
 {% block content %}
-<div style="padding:20px; max-width:1100px; margin:0 auto;">
-  <h2>Результаты поиска: «{{ query }}»</h2>
+<div class="search-results-container">
+    <div class="search-header">
+        <h1>Результаты поиска</h1>
+        <p class="search-query">«{{ query }}»</p>
+        <div class="results-stats">
+            <span class="stat-badge">🍕 Блюд: {{ search_results|length }}</span>
+            <span class="stat-badge">🏠 Ресторанов: {{ restaurants|length }}</span>
+        </div>
+    </div>
 
-  <!-- Отладочная информация -->
-  <div style="background: #2a2a2a; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
-    <small>Найдено блюд: {{ search_results|length }}, ресторанов: {{ restaurants|length }}</small>
-  </div>
-
-  <section style="margin-top:12px;">
-    <h3>Блюда ({{ search_results|length }})</h3>
     {% if search_results %}
-      <div style="display:flex; flex-wrap:wrap; gap:16px;">
-        {% for item in search_results %}
-          <div style="width:220px; background:#1c1c1c; padding:12px; border-radius:10px; text-align:center;">
-            <a href="{{ url_for('main.menu_item', item_id=item.id) }}" style="text-decoration:none; color:#fff;">
-              {% if item.image %}
-                <img src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }}" style="width:100%; height:120px; object-fit:cover; border-radius:8px;">
-              {% else %}
-                <div style="width:100%; height:120px; background:#333; border-radius:8px; display:flex; align-items:center; justify-content:center;">
-                  Нет изображения
-                </div>
-              {% endif %}
-              <h4 style="margin:10px 0 6px;">{{ item.name }}</h4>
-              <p>{{ item.price }} ₽</p>
-              <small>{{ item.restaurant.name }}</small>
-            </a>
-          </div>
-        {% endfor %}
-      </div>
-    {% else %}
-      <p>Блюд не найдено.</p>
+    <section class="results-section">
+        <h2><i class="fas fa-utensils"></i> Блюда ({{ search_results|length }})</h2>
+        <div class="items-grid">
+            {% for item in search_results %}
+            <div class="item-card">
+                <a href="{{ url_for('main.menu_item', item_id=item.id) }}" class="card-link">
+                    <div class="item-image">
+                        {% if item.image %}
+                            <img src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }}">
+                        {% else %}
+                            <div class="no-image">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="item-info">
+                        <h3 class="item-name">{{ item.name }}</h3>
+                        <p class="item-price">{{ item.price }} ₽</p>
+                        <p class="item-restaurant">
+                            <i class="fas fa-store"></i> {{ item.restaurant.name }}
+                        </p>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
     {% endif %}
-  </section>
 
-  <section style="margin-top:20px;">
-    <h3>Рестораны ({{ restaurants|length }})</h3>
     {% if restaurants %}
-      <div style="display:flex; flex-wrap:wrap; gap:16px;">
-        {% for r in restaurants %}
-          <div style="width:220px; background:#1c1c1c; padding:12px; border-radius:10px; text-align:center;">
-            <a href="{{ url_for('main.restaurant', restaurant_id=r.id) }}" style="text-decoration:none; color:#fff;">
-              {% if r.image %}
-                <img src="{{ url_for('static', filename=r.image) }}" alt="{{ r.name }}" style="width:100%; height:120px; object-fit:cover; border-radius:8px;">
-              {% else %}
-                <div style="width:100%; height:120px; background:#333; border-radius:8px; display:flex; align-items:center; justify-content:center;">
-                  Нет изображения
-                </div>
-              {% endif %}
-              <h4 style="margin:10px 0 6px;">{{ r.name }}</h4>
-              <p>Доставка: ~{{ r.delivery_time }} мин</p>
-            </a>
-          </div>
-        {% endfor %}
-      </div>
-    {% else %}
-      <p>Рестораны не найдены.</p>
+    <section class="results-section">
+        <h2><i class="fas fa-store"></i> Рестораны ({{ restaurants|length }})</h2>
+        <div class="restaurants-grid">
+            {% for r in restaurants %}
+            <div class="restaurant-card">
+                <a href="{{ url_for('main.restaurant', restaurant_id=r.id) }}" class="card-link">
+                    <div class="restaurant-image">
+                        {% if r.image %}
+                            <img src="{{ url_for('static', filename=r.image) }}" alt="{{ r.name }}">
+                        {% else %}
+                            <div class="no-image">
+                                <i class="fas fa-store"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="restaurant-info">
+                        <h3 class="restaurant-name">{{ r.name }}</h3>
+                        <p class="restaurant-delivery">
+                            <i class="fas fa-clock"></i> Доставка: ~{{ r.delivery_time }} мин
+                        </p>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
     {% endif %}
-  </section>
+
+    {% if not search_results and not restaurants %}
+    <div class="empty-results">
+        <i class="fas fa-search"></i>
+        <h3>Ничего не найдено</h3>
+        <p>Попробуйте изменить поисковый запрос</p>
+        <a href="{{ url_for('main.index') }}" class="back-home">Вернуться на главную</a>
+    </div>
+    {% endif %}
 </div>
+
+<style>
+.search-results-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    background: #ffffff;
+    min-height: 100vh;
+}
+
+.search-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.search-header h1 {
+    font-size: 2rem;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+
+.search-query {
+    font-size: 1.2rem;
+    color: #00b83a;
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+.results-stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.stat-badge {
+    background: #f8f9fa;
+    padding: 6px 16px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    color: #1a1a1a;
+}
+
+.results-section {
+    margin-bottom: 50px;
+}
+
+.results-section h2 {
+    font-size: 1.5rem;
+    color: #1a1a1a;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.results-section h2 i {
+    color: #00b83a;
+}
+
+/* Сетка блюд */
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.item-card {
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.item-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    border-color: transparent;
+}
+
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.item-image {
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s;
+}
+
+.item-card:hover .item-image img {
+    transform: scale(1.05);
+}
+
+.no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    color: #aaa;
+    font-size: 2rem;
+}
+
+.item-info {
+    padding: 14px;
+}
+
+.item-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 6px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.item-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #00b83a;
+    margin: 0 0 6px 0;
+}
+
+.item-restaurant {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Сетка ресторанов */
+.restaurants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.restaurant-card {
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.restaurant-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    border-color: transparent;
+}
+
+.restaurant-image {
+    width: 100%;
+    height: 150px;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.restaurant-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s;
+}
+
+.restaurant-card:hover .restaurant-image img {
+    transform: scale(1.05);
+}
+
+.restaurant-info {
+    padding: 14px;
+}
+
+.restaurant-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 6px 0;
+}
+
+.restaurant-delivery {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Пустой результат */
+.empty-results {
+    text-align: center;
+    padding: 80px 20px;
+    background: #f8f9fa;
+    border-radius: 24px;
+}
+
+.empty-results i {
+    font-size: 64px;
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+.empty-results h3 {
+    font-size: 1.5rem;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+}
+
+.empty-results p {
+    color: #6c757d;
+    margin-bottom: 25px;
+}
+
+.back-home {
+    display: inline-block;
+    background: #00b83a;
+    color: white;
+    padding: 12px 28px;
+    border-radius: 40px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.back-home:hover {
+    background: #008f2c;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .search-results-container {
+        padding: 20px 15px;
+    }
+
+    .items-grid, .restaurants-grid {
+        gap: 15px;
+    }
+
+    .item-image, .restaurant-image {
+        height: 140px;
+    }
+}
+</style>
 {% endblock %}
