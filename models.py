@@ -40,6 +40,7 @@ class Restaurant(db.Model):
 
 class MenuItem(db.Model):
     __tablename__ = 'menu_item'
+    search_name = db.Column(db.String(200), default='')
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False, index=True)
     price = db.Column(db.Float, nullable=False)

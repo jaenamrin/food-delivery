@@ -205,6 +205,27 @@ def profile():
         order.is_active = now < order.created_at + timedelta(minutes=max_delivery)
     return render_template('profile.html', user=current_user, orders=orders)
 
+
+@main_bp.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = ProfileForm()
+
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.phone = form.phone.data
+        current_user.address = form.address.data
+        db.session.commit()
+        flash('Профиль успешно обновлён!', 'success')
+        return redirect(url_for('main_bp.profile'))
+
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.phone.data = current_user.phone or ''
+        form.address.data = current_user.address or ''
+
+    return render_template('edit_profile.html', form=form)
+
 # --- Поиск (автокомплит) ---
 @main_bp.route("/search_items")
 def search_items():
