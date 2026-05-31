@@ -8,6 +8,7 @@ from sqlalchemy import or_, func, and_
 from functools import wraps
 import uuid
 from datetime import datetime
+from flask import abort
 
 main_bp = Blueprint('main', __name__)
 
@@ -34,45 +35,95 @@ def menu_item(item_id):
 @main_bp.route('/add_to_cart/<int:item_id>', methods=['POST'])
 @login_required
 def add_to_cart(item_id):
-    item = MenuItem.query.get_or_404(item_id)
     cart = session.get('cart', {})
-    key = str(item_id)
-    if key in cart:
-        cart[key]['quantity'] += 1
-    else:
-        cart[key] = {'name': item.name, 'price': float(item.price), 'quantity': 1, 'image': item.image}
-    session['cart'] = cart
-    session.modified = True
-    flash(f'Блюдо "{item.name}" добавлено в корзину!', 'success')
-    return redirect(url_for('main.restaurant', restaurant_id=item.restaurant_id))
+    item_id_str = str(item_id)
 
+    # Получаем информацию о товаре из базы данных
+    menu_item = MenuItem.query.get(item_id)
+    if not menu_item:
+        flash('Товар не найден!', 'error')
+        return redirect(request.referrer or url_for('main.index'))
+
+    if item_id_str in cart:
+        # Если товар уже есть - увеличиваем количество
+        if isinstance(cart[item_id_str], dict):
+            cart[item_id_str]['quantity'] += 1
+        else:
+            # Старый формат (просто число)
+            cart[item_id_str] += 1
+    else:
+        # Добавляем новый товар в правильном формате
+        cart[item_id_str] = {
+            'name': menu_item.name,
+            'price': menu_item.price,
+            'quantity': 1,
+            'image': menu_item.image or 'images/default.png'
+        }
+
+    session['cart'] = cart
+    flash('Товар добавлен в корзину!', 'success')
+    return redirect(request.referrer or url_for('main.index'))
 # --- Корзина ---
 @main_bp.route('/cart')
 @login_required
 def cart():
-    cart = session.get('cart', {})
-    subtotal = sum(item['price'] * item['quantity'] for item in cart.values())
+    cart_data = session.get('cart', {})
 
-    # Рассчитываем скидки
-    discounts = calculate_discounts(cart, subtotal)
+    # Преобразуем корзину в нужный формат
+    cart_items = {}
+    subtotal = 0
 
-    # Итоговая сумма после скидок
-    total_discount = discounts['burger_king_discount']
-    final_total = subtotal - total_discount
+    for item_id, item_info in cart_data.items():
+        if isinstance(item_info, dict):
+            # Уже правильный формат
+            cart_items[item_id] = item_info
+            subtotal += item_info['price'] * item_info['quantity']
+        else:
+            # Старый формат (просто количество)
+            menu_item = MenuItem.query.get(int(item_id))
+            if menu_item:
+                cart_items[item_id] = {
+                    'name': menu_item.name,
+                    'price': menu_item.price,
+                    'quantity': item_info,
+                    'image': menu_item.image or 'images/default.png'
+                }
+                subtotal += menu_item.price * item_info
+
+    # Рассчитываем скидки (как в твоём checkout)
+    discounts = {
+        'burger_king_discount': 0,
+        'pizza_house_cashback': 0,
+        'free_delivery': subtotal >= 1000
+    }
+
+    # Проверка на блюда Burger King (скидка 20%)
+    for item in cart_items.values():
+        if 'бургер' in item['name'].lower() or 'burger' in item['name'].lower():
+            discounts['burger_king_discount'] += item['price'] * item['quantity'] * 0.2
+
+    # Проверка на блюда Pizza House (кэшбэк 10%)
+    for item in cart_items.values():
+        if 'пицца' in item['name'].lower() or 'pizza' in item['name'].lower():
+            discounts['pizza_house_cashback'] += item['price'] * item['quantity'] * 0.1
+
+    # Итоговая сумма
+    final_total = subtotal - discounts['burger_king_discount']
+    delivery_price = 0 if discounts['free_delivery'] else 200
+    final_total += delivery_price
 
     return render_template('cart.html',
-                           cart=cart,
+                           cart=cart_items,
                            subtotal=subtotal,
+                           discounts=discounts,
                            final_total=final_total,
-                           discounts=discounts)
-
-
+                           delivery_price=delivery_price)
 # --- Оформление ---
 @main_bp.route('/checkout', methods=['POST'])
 @login_required
 def checkout():
-    cart = session.get('cart', {})
-    if not cart:
+    cart_data = session.get('cart', {})
+    if not cart_data:
         flash('Корзина пуста!', 'warning')
         return redirect(url_for('main.cart'))
 
@@ -81,65 +132,58 @@ def checkout():
         flash('Укажите адрес доставки', 'warning')
         return redirect(url_for('main.cart'))
 
-    subtotal = sum(item['price'] * item['quantity'] for item in cart.values())
-    discounts = calculate_discounts(cart, subtotal)
+    # Собираем все товары и считаем сумму
+    order_items = []
+    subtotal = 0
 
-    # Итоговая сумма после скидок
-    total_discount = discounts['burger_king_discount']
-    final_total = max(0, subtotal - total_discount)
+    for item_id, item_info in cart_data.items():
+        if isinstance(item_info, dict):
+            # Правильный формат
+            price = item_info['price']
+            quantity = item_info['quantity']
+            subtotal += price * quantity
+            order_items.append({
+                'menu_item_id': int(item_id),
+                'quantity': quantity,
+                'price': price
+            })
+        else:
+            # Старый формат (просто количество)
+            menu_item = MenuItem.query.get(int(item_id))
+            if menu_item:
+                subtotal += menu_item.price * item_info
+                order_items.append({
+                    'menu_item_id': menu_item.id,
+                    'quantity': item_info,
+                    'price': menu_item.price
+                })
 
-    # НОВОЕ: Проверяем, хочет ли пользователь использовать кэшбэк
-    use_cashback = request.form.get('use_cashback') == 'on'
-    cashback_to_use = 0
-    cashback_balance = current_user.cashback_balance or 0
+    # Простые скидки
+    final_total = subtotal
 
-    if use_cashback and cashback_balance > 0:
-        cashback_to_use = min(cashback_balance, final_total)
-        final_total = max(0, final_total - cashback_to_use)
-        current_user.cashback_balance = cashback_balance - cashback_to_use
-        flash(f' Использовано кэшбэка: {cashback_to_use:.0f} ₽. Остаток: {current_user.cashback_balance:.0f} ₽',
-              'success')
-
-    # Создаем заказ
+    # Создаём заказ
     order = Order(
         user_id=current_user.id,
         address=address,
         total_price=final_total,
-        use_cashback=use_cashback,
-        cashback_used=cashback_to_use,
         is_paid=False
     )
     db.session.add(order)
     db.session.commit()
 
     # Добавляем товары в заказ
-    for item_key, data in cart.items():
-        oi = OrderItem(order_id=order.id, menu_item_id=int(item_key), quantity=data['quantity'])
+    for item in order_items:
+        oi = OrderItem(
+            order_id=order.id,
+            menu_item_id=item['menu_item_id'],
+            quantity=item['quantity']
+        )
         db.session.add(oi)
-
-    # НАЧИСЛЯЕМ КЭШБЭК НА БАЛАНС ПОЛЬЗОВАТЕЛЯ ТОЛЬКО если не использовали кэшбэк на этот заказ
-    if discounts['pizza_house_cashback'] > 0:
-        current_user.cashback_balance = (current_user.cashback_balance or 0) + discounts['pizza_house_cashback']
-        flash(
-            f'Начислен кэшбэк 10% от Pizza House: {discounts["pizza_house_cashback"]:.0f} ₽! Теперь на вашем счету: {current_user.cashback_balance:.0f} ₽',
-            'success')
-
-    # Сообщения о скидках
-    discount_messages = []
-    if discounts['burger_king_discount'] > 0:
-        discount_messages.append(f' Применена скидка 20% на Burger King: -{discounts["burger_king_discount"]:.0f} ₽')
-
-    if discounts['free_delivery']:
-        discount_messages.append(' Бесплатная доставка!')
-
-    if discount_messages:
-        flash(' | '.join(discount_messages), 'success')
 
     db.session.commit()
     session['cart'] = {}
-    flash(f' Заказ #{order.id} оформлен! Осталось оплатить {final_total:.0f} ₽', 'success')
+    flash(f'Заказ #{order.id} оформлен! Осталось оплатить {final_total:.0f} ₽', 'success')
     return redirect(url_for('main.payment_page', order_id=order.id))
-
 
 # --- Remove from cart ---
 @main_bp.route('/remove_from_cart/<item_key>', methods=['POST'])
@@ -722,3 +766,43 @@ def process_payment(order_id):
 
     flash(f' Оплата прошла успешно! Номер транзакции: {order.payment_id}', 'success')
     return redirect(url_for('main.profile'))
+
+
+@main_bp.route('/reorder/<int:order_id>')
+@login_required
+def reorder(order_id):
+    from flask import abort
+
+    order = Order.query.get_or_404(order_id)
+    if order.user_id != current_user.id:
+        abort(403)
+
+    # Получаем текущую корзину из сессии
+    cart = session.get('cart', {})
+
+    # Добавляем все позиции заказа в корзину
+    for item in order.items:
+        item_id = str(item.menu_item_id)
+        menu_item = item.menu_item
+
+        if menu_item:
+            if item_id in cart:
+                # Если товар уже есть в корзине - увеличиваем количество
+                # Нужно проверить формат корзины
+                if isinstance(cart[item_id], dict):
+                    cart[item_id]['quantity'] += item.quantity
+                else:
+                    # Старый формат (просто число)
+                    cart[item_id] += item.quantity
+            else:
+                # Добавляем новый товар в правильном формате
+                cart[item_id] = {
+                    'name': menu_item.name,
+                    'price': menu_item.price,
+                    'quantity': item.quantity,
+                    'image': menu_item.image or 'images/default.png'
+                }
+
+    session['cart'] = cart
+    flash('Товары добавлены в корзину!', 'success')
+    return redirect(url_for('main.cart'))

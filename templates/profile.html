@@ -64,6 +64,11 @@
     <div class="order-status active">
         <i class="fas fa-truck"></i> В пути
     </div>
+     <div class="order-reorder-btn" style="margin-top: 12px;">
+    <a href="{{ url_for('main.reorder', order_id=order.id) }}" class="btn-small">
+        <i class="fas fa-redo-alt"></i> Заказать заново
+    </a>
+    </div>
     <div class="delivery-timer-container"
          data-created="{{ order.created_at.isoformat() }}"
          data-delivery-time="{{ order.max_delivery }}">
