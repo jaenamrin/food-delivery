@@ -518,6 +518,38 @@
     color: white;
     transform: translateY(-2px);
 }
+    /* Отступы для блока отзывов */
+.reviews-section {
+    margin-top: 60px;
+    padding-top: 40px;
+    padding-left: 30px;
+    padding-right: 30px;
+    border-top: 2px solid #f0f0f0;
+}
+
+/* Для десктопа */
+@media (min-width: 992px) {
+    .reviews-section {
+        padding-left: 50px;
+        padding-right: 50px;
+    }
+}
+
+/* Для планшетов */
+@media (min-width: 768px) and (max-width: 991px) {
+    .reviews-section {
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+}
+
+/* Для телефонов */
+@media (max-width: 767px) {
+    .reviews-section {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
 </style>
 
 <script>
