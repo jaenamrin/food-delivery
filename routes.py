@@ -195,17 +195,36 @@ def logout():
 @main_bp.route('/profile')
 @login_required
 def profile():
+    from datetime import datetime, timezone, timedelta
+
     orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.id.desc()).all()
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
+
     for order in orders:
-        if not order.created_at:
+        # Убеждаемся, что created_at в UTC
+        if order.created_at is None:
             order.created_at = now
-        delivery_times = [it.menu_item.restaurant.delivery_time for it in order.items if it.menu_item]
-        max_delivery = max(delivery_times) if delivery_times else 0
-        order.is_active = now < order.created_at + timedelta(minutes=max_delivery)
+        if order.created_at.tzinfo is None:
+            order.created_at = order.created_at.replace(tzinfo=timezone.utc)
+
+        # Вычисляем max_delivery из ресторанов
+        delivery_times = []
+        for item in order.items:
+            if item.menu_item and item.menu_item.restaurant:
+                delivery_times.append(item.menu_item.restaurant.delivery_time)
+
+        max_delivery = max(delivery_times) if delivery_times else 30
+
+        # Добавляем поле к заказу (временный атрибут)
+        order.max_delivery = max_delivery
+
+        # Вычисляем статус
+        delivery_end_time = order.created_at + timedelta(minutes=max_delivery)
+        order.is_active = now < delivery_end_time
+
     return render_template('profile.html', user=current_user, orders=orders)
 
-
+    return render_template('profile.html', user=current_user, orders=orders)
 @main_bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():

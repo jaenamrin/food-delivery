@@ -1,5 +1,6 @@
-
-/* ----- БАЗА ----- */
+/* ============================================ */
+/* БАЗОВЫЕ СТИЛИ И СБРОС                       */
+/* ============================================ */
 * {
     margin: 0;
     padding: 0;
@@ -8,20 +9,43 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background-color: #white;
+    background-color: #ffffff;
     color: #1a1a1a;
+    transition: background 0.3s ease, color 0.3s ease;
+    animation: fadeIn 0.6s ease-out;
 }
 
-/* ----- ШАПКА  ----- */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ============================================ */
+/* ОБЩИЕ ПЕРЕХОДЫ ДЛЯ ПЛАВНОЙ ТЕМЫ             */
+/* ============================================ */
+header, footer, nav, .restaurant, .promo-card, .menu-item, .cart-item,
+.cart-total, .form-container, .profile-card, .admin-card, .card,
+.search-input, .search-autocomplete, .btn, .category-btn, input,
+textarea, select, button, .empty-cart, .team-card, .about-card {
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ============================================ */
+/* ШАПКА                                        */
+/* ============================================ */
 header {
-    background: white !important;
+    background: #ffffff;
     box-shadow: 0 1px 8px rgba(0,0,0,0.05);
-    padding: 12px 32px !important;
+    padding: 12px 32px;
     border-bottom: 1px solid #eaeaea;
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
 header a {
-    color: #1a1a1a !important;
+    color: #1a1a1a;
+    text-decoration: none;
     transition: all 0.2s ease;
 }
 
@@ -31,50 +55,96 @@ header a {
     background: linear-gradient(135deg, #00b83a, #008f2c);
     -webkit-background-clip: text;
     background-clip: text;
-    color: transparent !important;
+    color: transparent;
 }
 
-/* Навигация */
 nav a {
     border-radius: 30px;
     font-weight: 500;
+    padding: 8px 16px;
 }
 
 nav a:hover {
-    background: #f0f0f0 !important;
-    color: #00b83a !important;
+    background: #f0f0f0;
+    color: #00b83a;
 }
 
-/* ----- ПОИСК ----- */
+/* ============================================ */
+/* ПОИСК                                        */
+/* ============================================ */
 .search-input {
-    background: #f3f3f3 !important;
-    border: 1px solid transparent !important;
-    border-radius: 40px !important;
-    color: #1a1a1a !important;
-    font-size: 15px !important;
-    height: 48px !important;
-    padding-left: 20px !important;
+    background: #f3f3f3;
+    border: 1px solid transparent;
+    border-radius: 40px;
+    color: #1a1a1a;
+    font-size: 15px;
+    height: 48px;
+    padding-left: 20px;
+    width: 100%;
 }
 
 .search-input:focus {
-    border-color: #00b83a !important;
-    background: white !important;
-    box-shadow: 0 0 0 3px rgba(0,184,58,0.1) !important;
+    border-color: #00b83a;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(0,184,58,0.1);
+    outline: none;
 }
 
 .search-btn {
-    background: #00b83a !important;
-    border-radius: 40px !important;
-    width: 48px !important;
-    height: 48px !important;
+    background: #00b83a;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .search-btn:hover {
-    background: #008f2c !important;
+    background: #008f2c;
     transform: scale(1.02);
 }
 
-/* ----- СЕКЦИЯ АКЦИЙ (КРАСИВЫЕ КАРТОЧКИ) ----- */
+.search-autocomplete {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    max-height: 320px;
+    overflow-y: auto;
+    background: white;
+    color: #1a1a1a;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    z-index: 2000;
+    display: none;
+    border: 1px solid #eaeaea;
+}
+
+.search-autocomplete .group-title {
+    padding: 8px 12px;
+    font-weight: bold;
+    color: #6c757d;
+    background: #f8f9fa;
+    font-size: 0.8rem;
+}
+
+.search-autocomplete .item {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-top: 1px solid #f0f0f0;
+    color: #1a1a1a;
+}
+
+.search-autocomplete .item:hover {
+    background: #f5f5f5;
+}
+
+/* ============================================ */
+/* АКЦИИ                                        */
+/* ============================================ */
 .promotions {
     max-width: 1300px;
     margin: 30px auto;
@@ -89,6 +159,7 @@ nav a:hover {
     display: flex;
     align-items: center;
     gap: 10px;
+    animation: slideFromLeft 0.6s ease-out;
 }
 
 .promotions h2 i {
@@ -106,9 +177,8 @@ nav a:hover {
 .promo-card {
     background: white;
     border-radius: 24px;
-    width: 320px;
+    width: 350px;
     overflow: hidden;
-    transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     border: 1px solid #eaeaea;
     cursor: pointer;
@@ -167,11 +237,14 @@ nav a:hover {
     font-size: 0.9rem;
 }
 
-/* ----- РЕСТОРАНЫ ----- */
+/* ============================================ */
+/* РЕСТОРАНЫ                                    */
+/* ============================================ */
 .restaurants-section {
-    max-width: 100%;
+    width: 100%;
+    max-width: 100vw;
+    margin: 40px 0;
     padding: 0 20px;
-    margin: 0 auto;
 }
 
 .restaurants-section h2 {
@@ -179,10 +252,12 @@ nav a:hover {
     font-weight: 600;
     margin-bottom: 24px;
     text-align: center;
-    justify-content: center;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
+    color: #1a1a1a;
+    animation: slideFromLeft 0.6s ease-out;
 }
 
 .restaurants-section h2 i {
@@ -195,7 +270,7 @@ nav a:hover {
     gap: 30px;
     width: 100%;
     max-width: 100%;
-    padding: 0 20px;
+    padding: 0 30px;
     box-sizing: border-box;
 }
 
@@ -206,6 +281,10 @@ nav a:hover {
     background: white;
     border-radius: 20px;
     overflow: hidden;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    animation: slideUp 0.5s ease-out forwards;
+    opacity: 0;
 }
 
 .restaurant:hover {
@@ -217,12 +296,18 @@ nav a:hover {
     width: 100%;
     height: 200px;
     object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.restaurant:hover img {
+    transform: scale(1.05);
 }
 
 .restaurant h3 {
     padding: 16px 16px 8px;
     font-size: 1.2rem;
     font-weight: 600;
+    color: #1a1a1a;
 }
 
 .restaurant p {
@@ -237,7 +322,7 @@ nav a:hover {
     gap: 6px;
     padding: 8px 16px;
     color: #6c757d;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
 }
 
 .delivery-time i {
@@ -253,13 +338,46 @@ nav a:hover {
     display: inline-block;
     font-weight: 500;
     text-decoration: none;
+    margin-top: auto;
 }
 
 .restaurant .btn:hover {
     background: #008f2c;
 }
 
-/* ----- МЕНЮ БЛЮД ----- */
+/* Анимации для карточек */
+.restaurant:nth-child(1) { animation-delay: 0.05s; }
+.restaurant:nth-child(2) { animation-delay: 0.10s; }
+.restaurant:nth-child(3) { animation-delay: 0.15s; }
+.restaurant:nth-child(4) { animation-delay: 0.20s; }
+.restaurant:nth-child(5) { animation-delay: 0.25s; }
+.restaurant:nth-child(6) { animation-delay: 0.30s; }
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ============================================ */
+/* МЕНЮ БЛЮД                                    */
+/* ============================================ */
 .menu-items {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -273,26 +391,34 @@ nav a:hover {
     background: white;
     border-radius: 20px;
     overflow: hidden;
-    transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     border: 1px solid #eaeaea;
+    cursor: pointer;
+    animation: slideUp 0.5s ease-out forwards;
+    opacity: 0;
 }
 
 .menu-item:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
 }
 
 .menu-item img {
     width: 100%;
     height: 160px;
     object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.menu-item:hover img {
+    transform: scale(1.05);
 }
 
 .menu-item h3 {
     padding: 16px 16px 8px;
     font-size: 1rem;
     font-weight: 600;
+    color: #1a1a1a;
 }
 
 .menu-item p {
@@ -312,7 +438,6 @@ nav a:hover {
     border: none;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
 }
 
 .menu-item button:hover {
@@ -320,7 +445,55 @@ nav a:hover {
     transform: translateY(-1px);
 }
 
-/* ----- КОРЗИНА ----- */
+/* ============================================ */
+/* КНОПКИ КАТЕГОРИЙ                             */
+/* ============================================ */
+.categories-filter {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+}
+
+.category-btn {
+    background: #f5f5f5;
+    color: #1a1a1a;
+    padding: 10px 24px;
+    border-radius: 40px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.category-btn:hover {
+    background: #e0e0e0;
+    transform: translateY(-1px);
+}
+
+.category-btn.active {
+    background: #00b83a;
+    color: white;
+}
+
+.category-dessert {
+    background: #fce4ec;
+    color: #e91e63;
+    padding: 5px 12px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-block;
+}
+
+/* ============================================ */
+/* КОРЗИНА                                      */
+/* ============================================ */
 .cart-container {
     max-width: 900px;
     margin: 40px auto;
@@ -334,6 +507,8 @@ nav a:hover {
     margin-bottom: 16px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     border: 1px solid #eaeaea;
+    animation: slideUp 0.5s ease-out forwards;
+    opacity: 0;
 }
 
 .cart-total {
@@ -344,92 +519,6 @@ nav a:hover {
     border: 1px solid #eaeaea;
 }
 
-.btn-danger {
-    background: white;
-    color: #ff5a5f;
-    border: 1px solid #ff5a5f;
-    border-radius: 40px;
-    padding: 8px 20px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-danger:hover {
-    background: #ff5a5f;
-    color: white;
-}
-
-/* ----- ФОРМЫ ----- */
-.form-container {
-    background: white;
-    border-radius: 24px;
-    padding: 40px;
-    max-width: 500px;
-    margin: 60px auto;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
-    border: 1px solid #eaeaea;
-}
-
-.form-container h2 {
-    margin-bottom: 24px;
-    font-size: 1.8rem;
-}
-
-.form-container input {
-    background: #f5f5f5;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    padding: 12px 16px;
-    width: 100%;
-    margin-bottom: 16px;
-}
-
-.form-container input:focus {
-    border-color: #00b83a;
-    outline: none;
-}
-
-.form-container button {
-    background: #00b83a;
-    color: white;
-    border-radius: 40px;
-    padding: 14px;
-    width: 100%;
-    border: none;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-}
-
-.form-container button:hover {
-    background: #008f2c;
-}
-
-/* ----- ПРОФИЛЬ ----- */
-.profile-container {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 0 20px;
-}
-
-.card {
-    background: white;
-    border-radius: 20px;
-    padding: 24px;
-    border: 1px solid #eaeaea;
-    margin-bottom: 24px;
-}
-
-/* ----- ФУТЕР ----- */
-footer {
-    background: white !important;
-    color: #6c757d !important;
-    border-top: 1px solid #eaeaea;
-    padding: 24px !important;
-    text-align: center;
-}
-
-/* ----- ПУСТАЯ КОРЗИНА ----- */
 .empty-cart {
     text-align: center;
     padding: 60px 40px;
@@ -464,7 +553,194 @@ footer {
     text-decoration: none;
 }
 
-/* ----- АДАПТИВ ----- */
+/* ============================================ */
+/* ФОРМЫ                                        */
+/* ============================================ */
+.form-container {
+    background: white;
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 500px;
+    margin: 60px auto;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+    border: 1px solid #eaeaea;
+}
+
+.form-container h2 {
+    margin-bottom: 24px;
+    font-size: 1.8rem;
+    color: #1a1a1a;
+}
+
+.form-container input {
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    width: 100%;
+    margin-bottom: 16px;
+    font-size: 1rem;
+}
+
+.form-container input:focus {
+    border-color: #00b83a;
+    outline: none;
+}
+
+.form-container button {
+    background: #00b83a;
+    color: white;
+    border-radius: 40px;
+    padding: 14px;
+    width: 100%;
+    border: none;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.form-container button:hover {
+    background: #008f2c;
+}
+
+/* ============================================ */
+/* ПРОФИЛЬ                                      */
+/* ============================================ */
+.profile-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid #eaeaea;
+    margin-bottom: 24px;
+}
+
+/* ============================================ */
+/* ОБЩИЕ КНОПКИ                                 */
+/* ============================================ */
+.btn, button[type="submit"], .restaurant .btn {
+    background: #00b83a;
+    color: white;
+    border-radius: 40px;
+    padding: 12px 24px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn:hover, button[type="submit"]:hover, .restaurant .btn:hover {
+    background: #008f2c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-danger {
+    background: white;
+    color: #ff5a5f;
+    border: 1px solid #ff5a5f;
+    border-radius: 40px;
+    padding: 8px 20px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-danger:hover {
+    background: #ff5a5f;
+    color: white;
+}
+
+/* ============================================ */
+/* ФУТЕР                                        */
+/* ============================================ */
+footer {
+    background: white;
+    color: #6c757d;
+    text-align: center;
+    padding: 24px;
+    border-top: 1px solid #eaeaea;
+}
+
+
+
+/* ============================================ */
+/* SKELETON LOADING                             */
+/* ============================================ */
+.skeleton {
+    background: linear-gradient(90deg, #e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%);
+    background-size: 200% 100%;
+    animation: skeletonLoading 1.5s infinite;
+    border-radius: 8px;
+}
+
+@keyframes skeletonLoading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-card {
+    width: 220px;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.skeleton-card .skeleton-image {
+    width: 100%;
+    height: 160px;
+}
+
+.skeleton-card .skeleton-text {
+    height: 16px;
+    margin: 12px;
+}
+
+.skeleton-card .skeleton-text-small {
+    height: 12px;
+    width: 60%;
+    margin: 12px;
+}
+
+/* ============================================ */
+/* КНОПКА ПЕРЕКЛЮЧЕНИЯ ТЕМЫ                     */
+/* ============================================ */
+.theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #00b83a;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: white;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+    background: #008f2c;
+}
+
+/* ============================================ */
+/* АДАПТИВНОСТЬ                                 */
+/* ============================================ */
 @media (max-width: 768px) {
     .restaurants {
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -477,228 +753,953 @@ footer {
     .promo-card {
         width: 280px;
     }
+
+    header {
+        flex-wrap: wrap;
+        padding: 12px 16px;
+    }
 }
+
 /* ============================================ */
-/* ДОПОЛНЕНИЯ: БЕЛЫЙ ФОН, НОВЫЕ КНОПКИ, АКЦИИ   */
+/* ТЁМНАЯ ТЕМА - БАЗА                          */
 /* ============================================ */
-
-/* Белый фон для всего сайта */
-body {
-    background: white !important;
-    color: #1a1a1a !important;
+body.dark-theme {
+    background: #0a0a0f !important;
+    color: #e8e8e8 !important;
 }
 
-/* Затемнение логотипа (делаем черным) */
-header img {
-    filter: brightness(0);
-    transition: filter 0.2s;
+body.dark-theme main {
+    background: transparent !important;
 }
 
-/* Шапка белая */
-header {
-    background: white !important;
-    box-shadow: 0 1px 8px rgba(0,0,0,0.05);
-    border-bottom: 1px solid #eaeaea;
+/* ============================================ */
+/* ХЕДЕР, ФУТЕР, НАВИГАЦИЯ                      */
+/* ============================================ */
+body.dark-theme header {
+    background: #111118 !important;
+    border-color: #222230 !important;
 }
 
-/* Все кнопки как в Яндекс Еде (зеленые, скругленные) */
-.btn, .form-button, button[type="submit"], .restaurant .btn {
+body.dark-theme footer {
+    background: #111118 !important;
+    border-color: #222230 !important;
+    color: #888899 !important;
+}
+
+body.dark-theme nav a {
+    color: #e8e8e8 !important;
+}
+
+body.dark-theme nav a:hover {
+    color: #00e5a0 !important;
+    background: rgba(255,255,255,0.05) !important;
+}
+
+/* ============================================ */
+/* ВСЕ БЕЛЫЕ БЛОКИ → ТЁМНЫЕ                     */
+/* ============================================ */
+body.dark-theme .restaurant,
+body.dark-theme .promo-card,
+body.dark-theme .menu-item,
+body.dark-theme .cart-item,
+body.dark-theme .cart-total,
+body.dark-theme .form-container,
+body.dark-theme .profile-card,
+body.dark-theme .orders-card,
+body.dark-theme .cashback-card,
+body.dark-theme .admin-card,
+body.dark-theme .card,
+body.dark-theme .empty-cart,
+body.dark-theme .team-card,
+body.dark-theme .about-card,
+body.dark-theme .feature-card,
+body.dark-theme .search-result-card,
+body.dark-theme .result-item,
+body.dark-theme .order-detail-page,
+body.dark-theme .order-info,
+body.dark-theme .order-summary,
+body.dark-theme .edit-profile-form,
+body.dark-theme .team-member,
+body.dark-theme .contact-info,
+body.dark-theme .about-page .card,
+body.dark-theme .about-container .card,
+body.dark-theme .about-content .card {
+    background: #15151c !important;
+    border: 1px solid #222230 !important;
+}
+
+/* ============================================ */
+/* ЗАГОЛОВКИ                                   */
+/* ============================================ */
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme h4,
+body.dark-theme h5,
+body.dark-theme h6 {
+    color: #ffffff !important;
+}
+
+/* ============================================ */
+/* ТЕКСТ                                       */
+/* ============================================ */
+body.dark-theme p,
+body.dark-theme span,
+body.dark-theme li,
+body.dark-theme td,
+body.dark-theme th,
+body.dark-theme label {
+    color: #d0d3dc !important;
+}
+
+body.dark-theme .delivery-time,
+body.dark-theme .info-label,
+body.dark-theme .order-address,
+body.dark-theme .text-muted {
+    color: #888899 !important;
+}
+
+/* ============================================ */
+/* КНОПКИ - ВСЕ ЗЕЛЁНЫЕ С БЕЛЫМ ТЕКСТОМ        */
+/* ============================================ */
+body.dark-theme .btn,
+body.dark-theme .btn-primary,
+body.dark-theme .btn-success,
+body.dark-theme .btn-green,
+body.dark-theme .btn-add,
+body.dark-theme .add-btn,
+body.dark-theme .btn-add-item,
+body.dark-theme .add-dish-btn,
+body.dark-theme button[type="submit"],
+body.dark-theme .restaurant .btn,
+body.dark-theme .empty-cart .btn,
+body.dark-theme .form-container button,
+body.dark-theme .cashback-card .btn,
+body.dark-theme a.btn {
     background: #00b83a !important;
-    color: white !important;
-    border-radius: 40px !important;
-    padding: 12px 24px !important;
-    font-weight: 600 !important;
+    color: #ffffff !important;
     border: none !important;
-    cursor: pointer !important;
-    transition: all 0.2s !important;
-    text-decoration: none !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 8px !important;
 }
 
-.btn:hover, .form-button:hover, button[type="submit"]:hover, .restaurant .btn:hover {
+body.dark-theme .btn:hover,
+body.dark-theme button[type="submit"]:hover {
     background: #008f2c !important;
-    transform: translateY(-1px) !important;
 }
 
-/* Карточки ресторанов (белые) */
-.restaurant {
-    background: white !important;
-    border: 1px solid #eaeaea !important;
+/* Кнопка удаления */
+body.dark-theme .btn-danger {
+    background: transparent !important;
+    border: 1px solid #ff5a5f !important;
+    color: #ff5a5f !important;
 }
 
-.restaurant h3, .restaurant p {
-    color: #1a1a1a !important;
+body.dark-theme .btn-danger:hover {
+    background: #ff5a5f !important;
+    color: #ffffff !important;
 }
 
-/* Время доставки с иконкой */
-.delivery-time {
-    display: flex !important;
-    align-items: center !important;
-    gap: 6px !important;
-    padding: 8px 16px !important;
-    color: #6c757d !important;
+/* ============================================ */
+/* ФОРМЫ                                       */
+/* ============================================ */
+body.dark-theme input,
+body.dark-theme textarea,
+body.dark-theme select {
+    background: #1e1e2a !important;
+    color: #e8e8e8 !important;
+    border: 1px solid #2a2a35 !important;
+}
+
+body.dark-theme input:focus,
+body.dark-theme textarea:focus,
+body.dark-theme select:focus {
+    border-color: #00b83a !important;
+    outline: none;
+}
+
+body.dark-theme input::placeholder,
+body.dark-theme textarea::placeholder {
+    color: #555 !important;
+}
+
+/* ============================================ */
+/* ПОИСК                                       */
+/* ============================================ */
+body.dark-theme .search-input {
+    background: #1e1e2a !important;
+    border-color: #2a2a35 !important;
+    color: #e8e8e8 !important;
+}
+
+body.dark-theme .search-autocomplete {
+    background: #15151c !important;
+    border-color: #222230 !important;
+}
+
+body.dark-theme .search-autocomplete .item {
+    color: #e8e8e8 !important;
+}
+
+body.dark-theme .search-autocomplete .item:hover {
+    background: #1e1e2a !important;
+}
+
+/* ============================================ */
+/* ТАБЛИЦЫ                                     */
+/* ============================================ */
+body.dark-theme table {
+    background: #15151c !important;
+}
+
+body.dark-theme thead,
+body.dark-theme th {
+    background: #1a1a25 !important;
+    color: #ffffff !important;
+}
+
+body.dark-theme td {
+    color: #e8e8e8 !important;
+    border-bottom: 1px solid #222230 !important;
+}
+
+body.dark-theme tr:hover td {
+    background: #1a1a25 !important;
+}
+
+/* ============================================ */
+/* СТАТУСЫ ЗАКАЗОВ                             */
+/* ============================================ */
+body.dark-theme .order-status,
+body.dark-theme .status {
+    padding: 4px 12px !important;
+    border-radius: 20px !important;
     font-size: 0.85rem !important;
 }
 
-/* Акции - шире */
-.promo-card {
-    width: 350px !important;
-    background: white !important;
-    border-radius: 24px !important;
-    border: 1px solid #eaeaea !important;
+body.dark-theme .order-status.active,
+body.dark-theme .status.active,
+body.dark-theme .status.processing,
+body.dark-theme .payment-status.unpaid {
+    background: rgba(255,152,0,0.15) !important;
+    color: #ffa500 !important;
 }
 
-/* Все карточки и контейнеры белые */
-.form-container, .cart-item, .cart-total, .card, .empty-cart {
-    background: white !important;
-    border: 1px solid #eaeaea !important;
-    color: #1a1a1a !important;
+body.dark-theme .order-status.completed,
+body.dark-theme .status.completed,
+body.dark-theme .status.delivered,
+body.dark-theme .payment-status.paid {
+    background: rgba(0,229,160,0.1) !important;
+    color: #00e5a0 !important;
 }
 
-/* Заголовки черные */
-h1, h2, h3, .promotions h2, .restaurants-section h2 {
-    color: #1a1a1a !important;
+/* ============================================ */
+/* ТОВАРЫ В ЗАКАЗЕ                             */
+/* ============================================ */
+body.dark-theme .order-items,
+body.dark-theme .order-products {
+    background: #0e0e14 !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+    border: 1px solid #222230 !important;
 }
 
-/* Кнопка удаления из корзины */
-.btn-danger {
-    background: white !important;
+body.dark-theme .order-items .item,
+body.dark-theme .order-products .item {
+    color: #e8e8e8 !important;
+    border-bottom: 1px solid #222230 !important;
+}
+
+/* ============================================ */
+/* РОЛЬ ПОЛЬЗОВАТЕЛЯ                           */
+/* ============================================ */
+body.dark-theme .user-role,
+body.dark-theme .role-badge {
+    background: rgba(0,184,58,0.15) !important;
+    color: #00e5a0 !important;
+    padding: 4px 12px !important;
+    border-radius: 20px !important;
+}
+
+/* ============================================ */
+/* СТРАНИЦА ОПЛАТЫ                             */
+/* ============================================ */
+body.dark-theme .payment-page,
+body.dark-theme .payment-container,
+body.dark-theme .payment-form,
+body.dark-theme .checkout-page,
+body.dark-theme .checkout-container {
+    background: transparent !important;
+}
+
+body.dark-theme .payment-page .card,
+body.dark-theme .payment-container .card,
+body.dark-theme .checkout-page .card,
+body.dark-theme .checkout-container .card,
+body.dark-theme .payment-method,
+body.dark-theme .payment-summary {
+    background: #15151c !important;
+    border: 1px solid #222230 !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+}
+
+/* ============================================ */
+/* СТРАНИЦА "О НАС" - КАРТОЧКИ КОМАНДЫ        */
+/* ============================================ */
+body.dark-theme .about-page,
+body.dark-theme .about-container,
+body.dark-theme .about-section,
+body.dark-theme .team-section {
+    background: transparent !important;
+}
+
+body.dark-theme .team-card,
+body.dark-theme .team-member,
+body.dark-theme .about-card,
+body.dark-theme .feature-card,
+body.dark-theme .value-card,
+body.dark-theme .contact-card {
+    background: #15151c !important;
+    border: 1px solid #222230 !important;
+    border-radius: 20px !important;
+}
+
+/* ============================================ */
+/* КНОПКИ ДЕЙСТВИЙ В АДМИНКЕ                   */
+/* ============================================ */
+body.dark-theme .btn-edit,
+body.dark-theme .btn-view {
+    background: rgba(0,184,58,0.2) !important;
+    color: #00b83a !important;
+    border: 1px solid #00b83a !important;
+}
+
+body.dark-theme .btn-delete {
+    background: rgba(255,90,95,0.2) !important;
     color: #ff5a5f !important;
     border: 1px solid #ff5a5f !important;
-    border-radius: 40px !important;
-    padding: 8px 20px !important;
 }
 
-.btn-danger:hover {
-    background: #ff5a5f !important;
-    color: white !important;
+/* ============================================ */
+/* КАТЕГОРИИ                                   */
+/* ============================================ */
+body.dark-theme .category-btn {
+    background: #1e1e2a !important;
+    color: #e8e8e8 !important;
+    border: 1px solid #2a2a35 !important;
 }
 
-/* Текст в карточках */
-.menu-item h3, .menu-item p {
-    color: #1a1a1a !important;
-}
-
-.menu-item p {
-    color: #00b83a !important;
-    font-weight: 700 !important;
-}
-
-/* Ссылки в навигации */
-nav a {
-    color: #1a1a1a !important;
-}
-
-nav a:hover {
-    color: #00b83a !important;
-    background: #f0f0f0 !important;
-}
-
-/* Футер */
-footer {
-    background: white !important;
-    color: #6c757d !important;
-    border-top: 1px solid #eaeaea !important;
-}
-
-/* Flash сообщения */
-.flash.success {
+body.dark-theme .category-btn.active {
     background: #00b83a !important;
-    color: white !important;
+    color: #ffffff !important;
 }
 
-.flash.error {
+/* ============================================ */
+/* ПРОМО-КАРТОЧКИ                              */
+/* ============================================ */
+body.dark-theme .promo-badge {
+    background: rgba(0,229,160,0.1) !important;
+    color: #00e5a0 !important;
+}
+
+body.dark-theme .promo-footer {
+    background: rgba(0,0,0,0.2) !important;
+    border-top: 1px solid rgba(255,255,255,0.05) !important;
+}
+
+/* ============================================ */
+/* ИЗОБРАЖЕНИЯ                                 */
+/* ============================================ */
+
+/* Обычные фото - чуть темнее */
+body.dark-theme img {
+    filter: brightness(0.9) contrast(1.05) !important;
+}
+
+/* Логотип в хедере - делаем белым в тёмной теме */
+body.dark-theme header img {
+    filter: brightness(0) invert(1) !important;
+}
+
+/* Иконки Font Awesome и SVG - не трогаем фильтры */
+body.dark-theme i,
+body.dark-theme svg,
+body.dark-theme .fas,
+body.dark-theme .far,
+body.dark-theme .fab,
+body.dark-theme .fa-solid,
+body.dark-theme .fa-regular,
+body.dark-theme .fa-brands,
+body.dark-theme [class*="fa-"] {
+    filter: none !important;
+    -webkit-filter: none !important;
+}
+
+/* Пустая корзина - инвертируем */
+body.dark-theme .empty-cart img {
+    filter: invert(1) !important;
+}
+
+/* ============================================ */
+/* СКРОЛЛБАР                                   */
+/* ============================================ */
+body.dark-theme ::-webkit-scrollbar-track {
+    background: #0a0a0f;
+}
+
+body.dark-theme ::-webkit-scrollbar-thumb {
+    background: #2a2a35;
+    border-radius: 10px;
+}
+
+/* ============================================ */
+/* ССЫЛКИ                                      */
+/* ============================================ */
+body.dark-theme a {
+    color: #00b83a !important;
+}
+
+body.dark-theme a:hover {
+    color: #00e5a0 !important;
+}
+
+/* ============================================ */
+/* СКЕЛЕТОНЫ                                   */
+/* ============================================ */
+body.dark-theme .skeleton {
+    background: linear-gradient(90deg, #2a2a35 25%, #3d3d4a 50%, #2a2a35 75%) !important;
+}
+/* ============================================ */
+/* УБИВАЕМ ВСЕ БЕЛЫЕ ФОНЫ И ЧЁРНЫЕ ТЕКСТЫ       */
+/* ============================================ */
+body.dark-theme *[style*="background: white"],
+body.dark-theme *[style*="background: #fff"],
+body.dark-theme *[style*="background: #ffffff"],
+body.dark-theme *[style*="background: rgb(255, 255, 255)"],
+body.dark-theme *[style*="background-color: white"],
+body.dark-theme *[style*="background-color: #fff"],
+body.dark-theme *[style*="background-color: #ffffff"],
+body.dark-theme *[style*="background:white"],
+body.dark-theme *[style*="background-color:white"],
+body.dark-theme *[style*="background:#fff"],
+body.dark-theme *[style*="background:#ffffff"],
+body.dark-theme *[style*="background-color:#fff"],
+body.dark-theme *[style*="background-color:#ffffff"] {
+    background: #15151c !important;
+    background-color: #15151c !important;
+}
+
+/* Убиваем чёрный текст */
+body.dark-theme *[style*="color: #000"],
+body.dark-theme *[style*="color: black"],
+body.dark-theme *[style*="color: #1a1a1a"],
+body.dark-theme *[style*="color: #333"],
+body.dark-theme *[style*="color:#000"],
+body.dark-theme *[style*="color:black"],
+body.dark-theme *[style*="color:#1a1a1a"],
+body.dark-theme *[style*="color:#333"] {
+    color: #e8e8e8 !important;
+}
+
+/* Убиваем белые бордеры */
+body.dark-theme *[style*="border: 1px solid #eaeaea"],
+body.dark-theme *[style*="border:1px solid #eaeaea"],
+body.dark-theme *[style*="border: 1px solid #eee"],
+body.dark-theme *[style*="border:1px solid #eee"] {
+    border-color: #222230 !important;
+}
+/* ============================================ */
+/* ЯДЕРНЫЙ УДАР ПО БЕЛЫМ ЭЛЕМЕНТАМ              */
+/* ============================================ */
+body.dark-theme div,
+body.dark-theme section,
+body.dark-theme article,
+body.dark-theme aside,
+body.dark-theme main div,
+body.dark-theme main section {
+    background-color: transparent !important;
+}
+
+body.dark-theme [style*="background: white"],
+body.dark-theme [style*="background: #fff"],
+body.dark-theme [style*="background: #ffffff"],
+body.dark-theme [style*="background: rgb(255"],
+body.dark-theme [style*="background-color: white"],
+body.dark-theme [style*="background-color: #fff"],
+body.dark-theme [style*="background-color: #ffffff"],
+body.dark-theme [style*="background-color: rgb(255"],
+body.dark-theme [bgcolor="white"],
+body.dark-theme [bgcolor="#fff"],
+body.dark-theme [bgcolor="#ffffff"],
+body.dark-theme [background="white"] {
+    background: #15151c !important;
+    background-color: #15151c !important;
+}
+
+body.dark-theme [style*="color: #000"],
+body.dark-theme [style*="color: black"],
+body.dark-theme [style*="color: #1a1a1a"],
+body.dark-theme [style*="color: #333"],
+body.dark-theme [style*="color: rgb(0"] {
+    color: #e8e8e8 !important;
+}
+/* ============================================ */
+/* ТОЧЕЧНЫЕ ФИКСЫ ПО СТРАНИЦАМ                   */
+/* ============================================ */
+
+/* ----- О НАС ----- */
+body.dark-theme .about-card,
+body.dark-theme .contacts-section,
+body.dark-theme .social-section,
+body.dark-theme .map-section {
+    background: #15151c !important;
+    border-color: #222230 !important;
+}
+body.dark-theme .about-hero h1,
+body.dark-theme .about-card h3,
+body.dark-theme .contacts-section h2,
+body.dark-theme .social-section h2,
+body.dark-theme .map-section h2,
+body.dark-theme .stat-number,
+body.dark-theme .contact-item strong {
+    color: #ffffff !important;
+}
+body.dark-theme .about-hero p,
+body.dark-theme .about-card p,
+body.dark-theme .stat-label,
+body.dark-theme .contact-item p,
+body.dark-theme .map-placeholder p {
+    color: #a0a0b0 !important;
+}
+body.dark-theme .card-icon {
+    background: rgba(0,184,58,0.15) !important;
+}
+body.dark-theme .stats-section {
+    background: #111118 !important;
+}
+body.dark-theme .contact-item {
+    background: #1e1e2a !important;
+}
+body.dark-theme .social-link {
+    background: #1e1e2a !important;
+    color: #e8e8e8 !important;
+}
+body.dark-theme .social-link:hover {
+    background: #00b83a !important;
+    color: #ffffff !important;
+}
+body.dark-theme .map-placeholder {
+    background: #1e1e2a !important;
+}
+
+/* ----- АДМИНКА: ФОРМЫ (добавить/ред. ресторан, блюдо) ----- */
+body.dark-theme .admin-form-container {
+    background: #15151c !important;
+    border-color: #222230 !important;
+}
+body.dark-theme .admin-form-container h1 {
+    color: #ffffff !important;
+}
+body.dark-theme .form-group label {
+    color: #e8e8e8 !important;
+}
+body.dark-theme .form-group input,
+body.dark-theme .form-group select,
+body.dark-theme .form-group textarea {
+    background: #1e1e2a !important;
+    color: #e8e8e8 !important;
+    border-color: #2a2a35 !important;
+}
+body.dark-theme .btn-save {
+    background: #00b83a !important;
+    color: #ffffff !important;
+}
+body.dark-theme .btn-cancel {
+    background: #2a2a35 !important;
+    color: #e8e8e8 !important;
+}
+body.dark-theme .btn-cancel:hover {
+    background: #3a3a45 !important;
+}
+
+/* ----- АДМИНКА: УПРАВЛЕНИЕ РЕСТОРАНАМИ ----- */
+body.dark-theme .admin-header h1 {
+    color: #ffffff !important;
+}
+body.dark-theme .admin-table-wrapper {
+    background: #15151c !important;
+    border-color: #222230 !important;
+}
+
+/* ----- АДМИНКА: УПРАВЛЕНИЕ МЕНЮ ----- */
+body.dark-theme .filter-panel {
+    background: #15151c !important;
+    border-color: #222230 !important;
+}
+body.dark-theme .sort-btn {
+    background: #1e1e2a !important;
+    color: #e8e8e8 !important;
+}
+body.dark-theme .sort-btn.active {
+    background: #00b83a !important;
+    color: #ffffff !important;
+}
+body.dark-theme .clear-btn {
+    background: #2a2a35 !important;
+    color: #e8e8e8 !important;
+}
+
+/* ----- АДМИНКА: УПРАВЛЕНИЕ ЗАКАЗАМИ ----- */
+body.dark-theme .badge-active {
+    background: rgba(255,152,0,0.15) !important;
+    color: #ffa500 !important;
+}
+body.dark-theme .badge-completed {
+    background: rgba(0,229,160,0.1) !important;
+    color: #00e5a0 !important;
+}
+body.dark-theme .items-popup {
+    background: #15151c !important;
+    border-color: #222230 !important;
+}
+body.dark-theme .items-header {
+    color: #888899 !important;
+    border-bottom-color: #222230 !important;
+}
+body.dark-theme .item-row {
+    color: #e8e8e8 !important;
+}
+body.dark-theme .view-items-btn {
+    background: #2a2a35 !important;
+    color: #e8e8e8 !important;
+}
+body.dark-theme .price-badge {
+    background: rgba(0,184,58,0.15) !important;
+    color: #00e5a0 !important;
+}
+body.dark-theme .stats-badge {
+    background: #1e1e2a !important;
+    color: #e8e8e8 !important;
+}
+body.dark-theme .date-day {
+    color: #e8e8e8 !important;
+}
+body.dark-theme .customer-name {
+    color: #ffffff !important;
+}
+body.dark-theme .customer-email {
+    color: #888899 !important;
+}
+
+/* ----- АДМИНКА: ПОЛЬЗОВАТЕЛИ ----- */
+body.dark-theme .badge-admin {
+    background: rgba(0,184,58,0.15) !important;
+    color: #00e5a0 !important;
+}
+body.dark-theme .badge-user {
+    background: #2a2a35 !important;
+    color: #e8e8e8 !important;
+}
+body.dark-theme .user-avatar {
+    background: rgba(0,184,58,0.15) !important;
+}
+body.dark-theme .contact-item {
+    color: #e8e8e8 !important;
+}
+body.dark-theme .orders-count {
+    color: #e8e8e8 !important;
+}
+body.dark-theme .self-badge {
+    background: #2a2a35 !important;
+    color: #888899 !important;
+}
+
+/* ----- ВСЕ ТАБЛИЦЫ В АДМИНКЕ ----- */
+body.dark-theme .admin-table th {
+    background: #1a1a25 !important;
+    color: #ffffff !important;
+}
+body.dark-theme .admin-table td {
+    background: #15151c !important;
+    color: #e8e8e8 !important;
+    border-bottom-color: #222230 !important;
+}
+body.dark-theme .admin-table tr:hover td {
+    background: #1a1a25 !important;
+}
+body.dark-theme .category-separator td {
+    background: #1a1a25 !important;
+}
+body.dark-theme .category-title {
+    color: #ffffff !important;
+}
+
+/* ----- КНОПКИ РЕДАКТИРОВАНИЯ И УДАЛЕНИЯ ----- */
+body.dark-theme .btn-edit {
+    background: rgba(33,150,243,0.2) !important;
+    color: #64b5f6 !important;
+}
+body.dark-theme .btn-edit:hover {
+    background: #2196f3 !important;
+    color: #ffffff !important;
+}
+body.dark-theme .btn-delete {
+    background: rgba(255,90,95,0.2) !important;
+    color: #ef5350 !important;
+}
+body.dark-theme .btn-delete:hover {
     background: #ff5a5f !important;
-    color: white !important;
+    color: #ffffff !important;
+}
+body.dark-theme .btn-make-admin {
+    background: rgba(0,184,58,0.2) !important;
+    color: #00e5a0 !important;
+}
+body.dark-theme .btn-make-admin:hover {
+    background: #00b83a !important;
+    color: #ffffff !important;
+}
+body.dark-theme .btn-remove-admin {
+    background: rgba(255,90,95,0.2) !important;
+    color: #ef5350 !important;
+}
+body.dark-theme .btn-remove-admin:hover {
+    background: #ff5a5f !important;
+    color: #ffffff !important;
 }
 
-.flash.warning {
-    background: #ffa500 !important;
-    color: white !important;
-}
-/* ====== КНОПКИ КАТЕГОРИЙ ====== */
-.categories-filter {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 32px;
+/* ----- КАТЕГОРИИ БЛЮД ----- */
+body.dark-theme .category-pizza,
+body.dark-theme .category-burger,
+body.dark-theme .category-sushi,
+body.dark-theme .category-breakfast,
+body.dark-theme .category-drink,
+body.dark-theme .category-other {
+    background: #2a2a35 !important;
 }
 
-.category-btn {
-    background: #f5f5f5;
-    color: #1a1a1a;
-    padding: 10px 24px;
-    border-radius: 40px;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.9rem;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+/* Контейнер */
+body.dark-theme .profile-container h1 {
+    color: #ffffff !important;
 }
 
-.category-btn i {
-    font-size: 1rem;
+/* Карточка личных данных */
+body.dark-theme .profile-card {
+    background: #15151c !important;
+    border-color: #222230 !important;
+}
+body.dark-theme .profile-card h2 {
+    color: #ffffff !important;
+}
+body.dark-theme .info-label {
+    color: #888899 !important;
+}
+body.dark-theme .info-value {
+    color: #e8e8e8 !important;
+}
+body.dark-theme .info-row {
+    border-bottom-color: #222230 !important;
 }
 
-.category-btn:hover {
-    background: #e0e0e0;
-    transform: translateY(-1px);
+/* Карточка кэшбэка */
+body.dark-theme .cashback-card {
+    background: #15151c !important;
+    border-color: #222230 !important;
+}
+body.dark-theme .cashback-icon {
+    background: rgba(0,184,58,0.15) !important;
+}
+body.dark-theme .cashback-content h3 {
+    color: #888899 !important;
+}
+body.dark-theme .cashback-amount {
+    color: #00e5a0 !important;
+}
+body.dark-theme .cashback-content p {
+    color: #888899 !important;
 }
 
-.category-btn.active {
-    background: #00b83a;
-    color: white;
+/* Кнопка выхода */
+body.dark-theme .btn-logout {
+    background: transparent !important;
+    color: #ff5a5f !important;
+    border-color: #ff5a5f !important;
 }
-.category-dessert {
-     background: #fce4ec;
-     color: #e91e63;
-     padding: 5px 12px;
-     border-radius: 30px;
-     font-size: 0.75rem;
-     font-weight: 500;
-     display: inline-block;
-}
-.menu-card {
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+body.dark-theme .btn-logout:hover {
+    background: #ff5a5f !important;
+    color: #ffffff !important;
 }
 
-.menu-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+/* История заказов */
+body.dark-theme .orders-card {
+    background: #15151c !important;
+    border-color: #222230 !important;
+}
+body.dark-theme .orders-card h2 {
+    color: #ffffff !important;
+}
+body.dark-theme .order-item {
+    border-color: #222230 !important;
+}
+body.dark-theme .order-number {
+    color: #ffffff !important;
+}
+body.dark-theme .order-status.active {
+    background: rgba(255,152,0,0.15) !important;
+    color: #ffa500 !important;
+}
+body.dark-theme .order-status.completed {
+    background: rgba(0,229,160,0.1) !important;
+    color: #00e5a0 !important;
+}
+body.dark-theme .payment-status.unpaid {
+    background: rgba(255,152,0,0.15) !important;
+    color: #ffa500 !important;
+}
+body.dark-theme .payment-status.paid {
+    background: rgba(0,229,160,0.1) !important;
+    color: #00e5a0 !important;
+}
+body.dark-theme .order-address {
+    color: #888899 !important;
+}
+body.dark-theme .order-items {
+    background: #0e0e14 !important;
+}
+body.dark-theme .order-item-row {
+    color: #e8e8e8 !important;
+}
+body.dark-theme .order-total {
+    color: #e8e8e8 !important;
+    border-top-color: #222230 !important;
+}
+body.dark-theme .order-total strong {
+    color: #ffffff !important;
 }
 
-.add-to-cart-btn {
-    cursor: pointer;
-    z-index: 10;
-    position: relative;
+/* Кнопка оплаты */
+body.dark-theme .pay-now-btn {
+    background: #00b83a !important;
+    color: #ffffff !important;
 }
-/* ----- РАСТЯГИВАЕМ РЕСТОРАНЫ НА ВСЮ ШИРИНУ ----- */
-.restaurants-section {
-    width: 100%;
-    max-width: 100vw;
-    margin: 40px 0;
+body.dark-theme .pay-now-btn:hover {
+    background: #008f2c !important;
 }
 
-.restaurants {
-    width: 100%;
-    max-width: 100%;
-    padding: 0 30px;
-    box-sizing: border-box;
+/* Кнопка "Выбрать ресторан" */
+body.dark-theme .btn-small {
+    background: #00b83a !important;
+    color: #ffffff !important;
 }
 
-/* Чтобы карточки были одинаковой высоты */
-.restaurant {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+/* Пустые заказы */
+body.dark-theme .empty-orders {
+    color: #888899 !important;
+}
+body.dark-theme .empty-orders i {
+    color: #555 !important;
 }
 
-.restaurant .btn {
-    margin-top: auto;
+/* Таймер доставки */
+body.dark-theme .delivery-timer-container {
+    background: #1e1e2a !important;
+}
+body.dark-theme .delivery-progress-bar {
+    background: #2a2a35 !important;
+}
+/* ============================================ */
+/* СТРАНИЦА РЕЗУЛЬТАТОВ ПОИСКА                   */
+/* ============================================ */
+
+/* Контейнер */
+body.dark-theme .search-results-container {
+    background: #0a0a0f !important;
+}
+
+/* Заголовок */
+body.dark-theme .search-header {
+    border-bottom-color: #222230 !important;
+}
+body.dark-theme .search-header h1 {
+    color: #ffffff !important;
+}
+body.dark-theme .search-query {
+    color: #00e5a0 !important;
+}
+
+/* Статистика */
+body.dark-theme .stat-badge {
+    background: #1e1e2a !important;
+    color: #e8e8e8 !important;
+}
+
+/* Заголовки секций */
+body.dark-theme .results-section h2 {
+    color: #ffffff !important;
+}
+
+/* Карточки блюд */
+body.dark-theme .item-card {
+    background: #15151c !important;
+    border-color: #222230 !important;
+}
+body.dark-theme .item-image {
+    background: #1e1e2a !important;
+}
+body.dark-theme .no-image {
+    background: #1e1e2a !important;
+}
+body.dark-theme .item-name {
+    color: #ffffff !important;
+}
+body.dark-theme .item-price {
+    color: #00e5a0 !important;
+}
+body.dark-theme .item-restaurant {
+    color: #888899 !important;
+}
+
+/* Карточки ресторанов */
+body.dark-theme .restaurant-card {
+    background: #15151c !important;
+    border-color: #222230 !important;
+}
+body.dark-theme .restaurant-image {
+    background: #1e1e2a !important;
+}
+body.dark-theme .restaurant-name {
+    color: #ffffff !important;
+}
+body.dark-theme .restaurant-delivery {
+    color: #888899 !important;
+}
+
+/* Пустой результат */
+body.dark-theme .empty-results {
+    background: #15151c !important;
+}
+body.dark-theme .empty-results i {
+    color: #555 !important;
+}
+body.dark-theme .empty-results h3 {
+    color: #ffffff !important;
+}
+body.dark-theme .empty-results p {
+    color: #888899 !important;
+}
+body.dark-theme .back-home {
+    background: #00b83a !important;
+    color: #ffffff !important;
+}
+/* Логотип: светлая тема — чёрный */
+header img,
+img#site-logo {
+    filter: invert(1) !important;
+    -webkit-filter: invert(1) !important;
+}
+
+/* Логотип: тёмная тема — белый (убираем фильтр) */
+body.dark-theme header img,
+body.dark-theme img#site-logo {
+    filter: none !important;
+    -webkit-filter: none !important;
 }

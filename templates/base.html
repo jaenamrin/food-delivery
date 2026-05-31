@@ -6,147 +6,368 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.1/css/all.css">
   <style>
-    /* Белая тема для навигации */
-    nav a {
-      color: #1a1a1a !important;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 30px;
-      transition: all 0.2s;
-    }
+/* Базовые анимации для всех страниц */
+body {
+  animation: fadeInPage 0.5s ease-out;
+  background: #ffffff;
+  color: #1a1a1a;
+  transition: background 0.3s ease, color 0.3s ease;
+}
 
-    nav a:hover {
-      color: #00b83a !important;
-      background: #f0f0f0 !important;
-    }
+/* Добавляем плавные переходы для ВСЕХ элементов */
+header, footer, nav, .restaurant, .restaurant-card, .item-card, .promo-card,
+.profile-card, .cashback-card, .orders-card, .cart-item, .cart-total,
+.menu-item, .team-card, .about-card, .form-container, .edit-profile-form,
+.admin-card, .search-input, .search-autocomplete, .btn, .category-btn,
+.search-btn, input, textarea, select, button {
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
 
-    /* Выпадающий поиск (белая тема) */
-    .search-autocomplete {
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 0;
-      right: 0;
-      max-height: 320px;
-      overflow-y: auto;
-      background: white;
-      color: #1a1a1a;
-      border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-      z-index: 2000;
-      display: none;
-      border: 1px solid #eaeaea;
-    }
+/* Карточки появляются с задержкой */
+.restaurant, .restaurant-card, .item-card, .promo-card {
+  animation: cardFadeUp 0.4s ease-out forwards;
+  opacity: 0;
+}
 
-    .search-autocomplete .group-title {
-      padding: 8px 12px;
-      font-weight: bold;
-      color: #6c757d;
-      background: #f8f9fa;
-      font-size: 0.8rem;
-    }
+@keyframes cardFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-    .search-autocomplete .item {
-      padding: 10px 12px;
-      cursor: pointer;
-      border-top: 1px solid #f0f0f0;
-      color: #1a1a1a;
-    }
+/* Навигация */
+nav a {
+  color: #1a1a1a !important;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 30px;
+  transition: all 0.2s;
+}
 
-    .search-autocomplete .item:hover {
-      background: #f5f5f5;
-    }
+nav a:hover {
+  color: #00b83a !important;
+  background: #f0f0f0 !important;
+}
 
-    /* Строка поиска (белая) */
-    .search-input {
-      background: #f5f5f5 !important;
-      border: 1px solid #e0e0e0 !important;
-      border-radius: 40px !important;
-      color: #1a1a1a !important;
-    }
+/* Выпадающий поиск */
+.search-autocomplete {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  background: white;
+  color: #1a1a1a;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  z-index: 2000;
+  display: none;
+  border: 1px solid #eaeaea;
+}
 
-    .search-input:focus {
-      border-color: #00b83a !important;
-      outline: none;
-    }
+.search-autocomplete .group-title {
+  padding: 8px 12px;
+  font-weight: bold;
+  color: #6c757d;
+  background: #f8f9fa;
+  font-size: 0.8rem;
+}
 
-    .search-btn {
-      background: #00b83a !important;
-      border: none;
-      border-radius: 50%;
-    }
+.search-autocomplete .item {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-top: 1px solid #f0f0f0;
+  color: #1a1a1a;
+}
 
-    .search-btn:hover {
-      background: #008f2c !important;
-    }
+.search-autocomplete .item:hover {
+  background: #f5f5f5;
+}
 
-    .logo-text {
-      font-weight: 700;
-      font-size: 1.3rem;
-      background: linear-gradient(135deg, #00b83a, #008f2c);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
+/* Строка поиска */
+.search-input {
+  background: #f5f5f5 !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 40px !important;
+  color: #1a1a1a !important;
+}
 
-    /* Flash сообщения */
-    .flash {
-      padding: 12px 16px;
-      border-radius: 12px;
-      margin-bottom: 8px;
-    }
+.search-input:focus {
+  border-color: #00b83a !important;
+  outline: none;
+}
 
-    .flash.success {
-      background: #00b83a;
-      color: white;
-    }
+.search-btn {
+  background: #00b83a !important;
+  border: none;
+  border-radius: 50%;
+}
 
-    .flash.error {
-      background: #ff5a5f;
-      color: white;
-    }
+.search-btn:hover {
+  background: #008f2c !important;
+}
 
-    .flash.warning {
-      background: #ffa500;
-      color: white;
-    }
+.logo-text {
+  font-weight: 700;
+  font-size: 1.3rem;
+  background: linear-gradient(135deg, #00b83a, #008f2c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 
-    .flash.info {
-      background: #2196f3;
-      color: white;
-    }
+/* ========== FLASH-УВЕДОМЛЕНИЯ ========== */
+.flash-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 420px;
+    width: 100%;
+}
+
+.flash-notification {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    animation: slideInRight 0.4s ease-out;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(120%); opacity: 0; }
+}
+
+.flash-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.flash-notification.success .flash-icon { background: #e8f5e9; color: #00b83a; }
+.flash-notification.error .flash-icon { background: #ffebee; color: #ff5a5f; }
+.flash-notification.warning .flash-icon { background: #fff3e0; color: #ff9800; }
+.flash-notification.info .flash-icon { background: #e3f2fd; color: #2196f3; }
+
+.flash-content { flex: 1; min-width: 0; }
+.flash-message { font-size: 0.9rem; font-weight: 500; color: #1a1a1a; line-height: 1.4; }
+
+.flash-close {
+    width: 28px; height: 28px; border-radius: 8px; border: none;
+    background: #f0f0f0; color: #6c757d; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0; transition: all 0.2s;
+}
+.flash-close:hover { background: #e0e0e0; color: #1a1a1a; }
+
+.flash-progress {
+    position: absolute; bottom: 0; left: 0; height: 3px;
+    border-radius: 0 0 16px 16px;
+    animation: progressShrink 4s linear forwards;
+}
+.flash-notification.success .flash-progress { background: #00b83a; }
+.flash-notification.error .flash-progress { background: #ff5a5f; }
+.flash-notification.warning .flash-progress { background: #ff9800; }
+.flash-notification.info .flash-progress { background: #2196f3; }
+
+@keyframes progressShrink {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+/* Тёмная тема для flash */
+body.dark-theme .flash-notification { background: #1a1a25; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+body.dark-theme .flash-message { color: #e8e8e8; }
+body.dark-theme .flash-close { background: #2a2a35; color: #888899; }
+body.dark-theme .flash-close:hover { background: #3a3a45; color: #e8e8e8; }
+body.dark-theme .flash-notification.success .flash-icon { background: rgba(0,184,58,0.15); color: #00e5a0; }
+body.dark-theme .flash-notification.error .flash-icon { background: rgba(255,90,95,0.15); color: #ff5a5f; }
+body.dark-theme .flash-notification.warning .flash-icon { background: rgba(255,152,0,0.15); color: #ffa500; }
+body.dark-theme .flash-notification.info .flash-icon { background: rgba(33,150,243,0.15); color: #64b5f6; }
+
+/* Skeleton Screen */
+.skeleton {
+  background: linear-gradient(90deg, #e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  animation: skeletonLoading 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes skeletonLoading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-card {
+  width: 220px;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.skeleton-card .skeleton-image { width: 100%; height: 160px; }
+.skeleton-card .skeleton-text { height: 16px; margin: 12px; }
+.skeleton-card .skeleton-text-small { height: 12px; width: 60%; margin: 12px; }
+
+/* Кнопка переключения темы */
+.theme-toggle {
+  position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px;
+  border-radius: 50%; background: #00b83a; border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; transition: all 0.3s ease; color: white;
+}
+
+.theme-toggle:hover { transform: scale(1.1); background: #008f2c; }
+
+/* ========== ТЁМНАЯ ТЕМА ========== */
+body.dark-theme { background: #0a0a0f !important; color: #e8e8e8 !important; }
+body.dark-theme header { background: #111118 !important; border-color: #222230 !important; box-shadow: 0 1px 8px rgba(0,0,0,0.3) !important; }
+body.dark-theme footer { background: #111118 !important; border-color: #222230 !important; color: #888899 !important; }
+body.dark-theme nav a { color: #e8e8e8 !important; }
+body.dark-theme nav a:hover { color: #00e5a0 !important; background: #1a1a25 !important; }
+
+body.dark-theme .restaurant, body.dark-theme .restaurant-card, body.dark-theme .promo-card,
+body.dark-theme .profile-card, body.dark-theme .cashback-card, body.dark-theme .orders-card,
+body.dark-theme .cart-item, body.dark-theme .cart-total, body.dark-theme .menu-item,
+body.dark-theme .team-card, body.dark-theme .about-card, body.dark-theme .form-container,
+body.dark-theme .edit-profile-form, body.dark-theme .admin-card {
+  background: #15151c !important; border: 1px solid #222230 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+}
+
+body.dark-theme .restaurant:hover, body.dark-theme .restaurant-card:hover,
+body.dark-theme .menu-item:hover, body.dark-theme .promo-card:hover {
+  background: #1a1a25 !important; border-color: #2a2a35 !important;
+  transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
+}
+
+body.dark-theme h1, body.dark-theme h2, body.dark-theme h3, body.dark-theme h4, body.dark-theme h5, body.dark-theme h6,
+body.dark-theme .profile-container h1, body.dark-theme .promotions h2, body.dark-theme .restaurants-section h2 {
+  color: #ffffff !important;
+}
+
+body.dark-theme p, body.dark-theme span, body.dark-theme li, body.dark-theme td, body.dark-theme th, body.dark-theme label,
+body.dark-theme .info-label, body.dark-theme .info-value, body.dark-theme .delivery-time, body.dark-theme .order-address,
+body.dark-theme .order-item-row, body.dark-theme .cart-item p, body.dark-theme .cart-total p,
+body.dark-theme .menu-item-description, body.dark-theme .restaurant-info p {
+  color: #e8e8e8 !important;
+}
+body.dark-theme .info-label { color: #888899 !important; }
+body.dark-theme a { color: #00b83a !important; }
+body.dark-theme a:hover { color: #00e5a0 !important; }
+
+body.dark-theme input[type="text"], body.dark-theme input[type="email"], body.dark-theme input[type="password"],
+body.dark-theme input[type="number"], body.dark-theme input[type="tel"], body.dark-theme textarea, body.dark-theme select {
+  background: #1e1e2a !important; color: #e8e8e8 !important; border: 1px solid #2a2a35 !important;
+}
+
+body.dark-theme input:focus, body.dark-theme textarea:focus, body.dark-theme select:focus {
+  border-color: #00b83a !important; box-shadow: 0 0 0 2px rgba(0,184,58,0.2) !important;
+}
+
+body.dark-theme input::placeholder, body.dark-theme textarea::placeholder { color: #6c757d !important; }
+
+body.dark-theme .btn, body.dark-theme .btn-primary, body.dark-theme .search-btn,
+body.dark-theme .pay-now-btn, body.dark-theme button[type="submit"], body.dark-theme .restaurant .btn {
+  background: #00b83a !important; color: white !important; border: none !important;
+}
+body.dark-theme .btn:hover, body.dark-theme .btn-primary:hover, body.dark-theme button[type="submit"]:hover {
+  background: #008f2c !important; box-shadow: 0 4px 12px rgba(0,184,58,0.3) !important;
+}
+body.dark-theme .btn-logout { background: #2a2a35 !important; border: 1px solid #ff5a5f !important; color: #ff5a5f !important; }
+body.dark-theme .btn-logout:hover { background: rgba(255,90,95,0.1) !important; }
+
+body.dark-theme .category-btn { background: #1e1e2a !important; color: #e8e8e8 !important; border: 1px solid #2a2a35 !important; }
+body.dark-theme .category-btn:hover { background: #252535 !important; }
+body.dark-theme .category-btn.active { background: #00b83a !important; color: white !important; border-color: #00b83a !important; }
+
+body.dark-theme .search-input { background: #1e1e2a !important; border: 1px solid #2a2a35 !important; color: #e8e8e8 !important; }
+body.dark-theme .search-input::placeholder { color: #6c757d !important; }
+body.dark-theme .search-autocomplete { background: #15151c !important; border: 1px solid #222230 !important; box-shadow: 0 6px 18px rgba(0,0,0,0.3) !important; }
+body.dark-theme .search-autocomplete .group-title { background: #1a1a25 !important; color: #888899 !important; }
+body.dark-theme .search-autocomplete .item { color: #e8e8e8 !important; border-top-color: #222230 !important; }
+body.dark-theme .search-autocomplete .item:hover { background: #1e1e2a !important; }
+
+body.dark-theme .order-status.active { background: rgba(255,152,0,0.15) !important; color: #ffa500 !important; }
+body.dark-theme .order-status.completed { background: rgba(0,229,160,0.1) !important; color: #00e5a0 !important; }
+body.dark-theme .order-status.cancelled { background: rgba(255,90,95,0.1) !important; color: #ff5a5f !important; }
+body.dark-theme .order-items { background: #0e0e14 !important; }
+
+body.dark-theme table { background: #15151c !important; border-color: #222230 !important; }
+body.dark-theme thead { background: #1a1a25 !important; }
+body.dark-theme tr { border-color: #222230 !important; }
+body.dark-theme tr:hover { background: #1a1a25 !important; }
+
+body.dark-theme .restaurant img, body.dark-theme .menu-item img, body.dark-theme .item-card img,
+body.dark-theme .restaurant-card img, body.dark-theme .cart-item img {
+    filter: brightness(0.9) contrast(1.05) !important;
+}
+
+body.dark-theme ::-webkit-scrollbar { width: 8px; }
+body.dark-theme ::-webkit-scrollbar-track { background: #0a0a0f; }
+body.dark-theme ::-webkit-scrollbar-thumb { background: #2a2a35; border-radius: 10px; }
+body.dark-theme ::-webkit-scrollbar-thumb:hover { background: #00b83a; }
+
+body.dark-theme .skeleton { background: linear-gradient(90deg, #2a2a35 25%, #3d3d4a 50%, #2a2a35 75%) !important; background-size: 200% 100% !important; }
+body.dark-theme .skeleton-card { background: #15151c !important; box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important; }
+body.dark-theme hr, body.dark-theme .divider { border-color: #222230 !important; }
+body.dark-theme .badge { background: #1e1e2a !important; color: #e8e8e8 !important; }
   </style>
 </head>
 <body style="margin:0; font-family:'Segoe UI', Arial, sans-serif; background:white; color:#1a1a1a;">
 
-<header style="display:flex; align-items:center; gap:20px; padding:12px 32px; background:white; position:sticky; top:0; z-index:1000; border-bottom:1px solid #eaeaea; box-shadow:0 1px 8px rgba(0,0,0,0.05);">
+<button id="themeToggle" class="theme-toggle"><i class="fas fa-moon"></i></button>
+
+<header style="display:flex; align-items:center; gap:20px; padding:12px 32px; background:white; position:sticky; top:0; z-index:1000; border-bottom:1px solid #eaeaea; box-shadow:0 1px 8px rgba(0,0,0,0.05); transition: background 0.3s, border-color 0.3s;">
   <a href="{{ url_for('main.index') }}" style="display:flex; align-items:center; gap:12px; text-decoration:none;">
-    <img src="{{ url_for('static', filename='images/food_delivery.png') }}" alt="logo" style="height:44px; filter: brightness(0);">
+    <img id="site-logo" src="{{ url_for('static', filename='images/food_delivery.png') }}" alt="logo" style="height:44px;">
     <span class="logo-text">Food Delivery</span>
   </a>
-
   <div style="position:relative; flex:1; display:flex; justify-content:center;">
     <div style="width:100%; max-width:800px;">
       <div style="display:flex; gap:12px; align-items:center;">
-        <input id="search-input" class="search-input" type="text" placeholder="Найти блюдо или ресторан..." autocomplete="off"
-               style="flex:1; height:48px; padding:0 24px; font-size:16px;">
-        <button id="search-button" class="search-btn" title="Найти"
-                style="width:48px; height:48px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+        <input id="search-input" class="search-input" type="text" placeholder="Найти блюдо или ресторан..." autocomplete="off" style="flex:1; height:48px; padding:0 24px; font-size:16px;">
+        <button id="search-button" class="search-btn" title="Найти" style="width:48px; height:48px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
           <i class="fas fa-search" style="color:white; font-size:1.2rem;"></i>
         </button>
       </div>
       <div id="autocomplete" class="search-autocomplete"></div>
     </div>
   </div>
-
   <nav style="display:flex; gap:8px; align-items:center;">
     {% if current_user.is_authenticated %}
       <a href="{{ url_for('main.index') }}"><i class="fas fa-home"></i> Главная</a>
       <a href="{{ url_for('main.cart') }}"><i class="fas fa-shopping-cart"></i> Корзина</a>
       <a href="{{ url_for('main.profile') }}"><i class="fas fa-user"></i> Профиль</a>
       {% if current_user.is_admin %}
-        <a href="{{ url_for('main.admin_panel') }}" style="background: #00b83a; color: white !important; border-radius: 30px;">
-          <i class="fas fa-shield-alt"></i> Админка
-        </a>
+        <a href="{{ url_for('main.admin_panel') }}" style="background: #00b83a; color: white !important; border-radius: 30px;"><i class="fas fa-shield-alt"></i> Админка</a>
       {% endif %}
       <a href="{{ url_for('main.about') }}"><i class="fas fa-info-circle"></i> О нас</a>
     {% else %}
@@ -158,29 +379,52 @@
 </header>
 
 <main style="min-height:calc(100vh - 120px);">
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div style="padding:20px 24px 0 24px; max-width:800px; margin:0 auto;">
-        {% for category, msg in messages %}
-          <div class="flash {{ category }}">{{ msg }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-container">
+      {% for category, msg in messages %}
+        <div class="flash-notification {{ category }}">
+          <div class="flash-icon">
+            {% if category == 'success' %}<i class="fas fa-check-circle"></i>
+            {% elif category == 'error' %}<i class="fas fa-times-circle"></i>
+            {% elif category == 'warning' %}<i class="fas fa-exclamation-triangle"></i>
+            {% else %}<i class="fas fa-info-circle"></i>{% endif %}
+          </div>
+          <div class="flash-content"><span class="flash-message">{{ msg }}</span></div>
+          <button class="flash-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+          <div class="flash-progress"></div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
   {% block content %}{% endblock %}
 </main>
 
-<footer style="background:white; color:#6c757d; text-align:center; padding:24px; border-top:1px solid #eaeaea;">
+<footer style="background:white; color:#6c757d; text-align:center; padding:24px; border-top:1px solid #eaeaea; transition: background 0.3s, border-color 0.3s;">
   <p>&copy; 2025 Food Delivery. Все права защищены.</p>
 </footer>
 
 <script>
+// Тёмная тема
+const themeToggle = document.getElementById('themeToggle');
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme === 'dark') {
+  document.body.classList.add('dark-theme');
+  themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+}
+themeToggle.addEventListener('click', () => {
+  document.body.classList.toggle('dark-theme');
+  const isDark = document.body.classList.contains('dark-theme');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+});
+
+// Поиск
 (function(){
   const input = document.getElementById('search-input');
   const auto = document.getElementById('autocomplete');
   const btn = document.getElementById('search-button');
-
   let timer = null;
   input.addEventListener('input', () => {
     clearTimeout(timer);
@@ -188,34 +432,27 @@
     if (!q) { auto.style.display='none'; auto.innerHTML=''; return; }
     timer = setTimeout(()=> fetchSuggestions(q), 200);
   });
-
   btn.addEventListener('click', ()=> {
     const q = input.value.trim();
     if (q) location.href = `/search?query=${encodeURIComponent(q)}`;
   });
-
   async function fetchSuggestions(q){
     try {
       const res = await fetch(`/search_items?q=${encodeURIComponent(q)}`);
       if (!res.ok) throw new Error('network');
       const data = await res.json();
       renderSuggestions(data);
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) { console.error(e); }
   }
-
   function renderSuggestions(data){
     auto.innerHTML = '';
     const items = data.menu_items || [];
     const rests = data.restaurants || [];
-
     if (items.length===0 && rests.length===0){
       auto.innerHTML = `<div class="item">Совпадений не найдено</div>`;
       auto.style.display = 'block';
       return;
     }
-
     if (items.length){
       auto.insertAdjacentHTML('beforeend', `<div class="group-title">🍽️ Блюда</div>`);
       items.forEach(i => {
@@ -230,24 +467,48 @@
     }
     auto.style.display = 'block';
   }
-
   auto.addEventListener('click', (e) => {
     const el = e.target.closest('.item');
     if (!el) return;
     const url = el.getAttribute('data-url');
     if (url) location.href = url;
   });
-
   document.addEventListener('click', (e) => {
     if (!e.target.closest('#autocomplete') && !e.target.closest('#search-input')) {
       auto.style.display = 'none';
     }
   });
-
   function escapeHtml(s){
     return s.replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]); });
   }
 })();
+
+// Скелетоны
+function showSkeletons(containerId, cardCount = 6) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const realContent = container.innerHTML;
+  container.setAttribute('data-real-content', encodeURIComponent(realContent));
+  let skeletons = '<div style="display: flex; gap: 20px; flex-wrap: wrap;">';
+  for (let i = 0; i < cardCount; i++) {
+    skeletons += `<div class="skeleton-card"><div class="skeleton skeleton-image"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text-small"></div></div>`;
+  }
+  skeletons += '</div>';
+  container.innerHTML = skeletons;
+  setTimeout(() => {
+    container.innerHTML = decodeURIComponent(container.getAttribute('data-real-content'));
+  }, 800);
+}
+
+// Авто-закрытие flash-уведомлений
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.flash-notification').forEach(flash => {
+        setTimeout(() => {
+            flash.style.animation = 'slideOutRight 0.3s ease-in forwards';
+            setTimeout(() => flash.remove(), 300);
+        }, 4000);
+    });
+});
 </script>
 </body>
 </html>

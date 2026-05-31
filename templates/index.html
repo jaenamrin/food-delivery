@@ -11,7 +11,6 @@
         Акции и предложения
     </h2>
     <div class="promo-cards">
-
         <!-- Burger King акция -->
         <div class="promo-card">
             <div class="promo-icon">
@@ -64,14 +63,15 @@
         </div>
     </div>
 </section>
-<!-- Рестораны -->
+
+<!-- Рестораны с обёрткой для скелетонов -->
 <section class="restaurants-section">
     <h2>
         <i class="fas fa-utensils"></i>
         Рестораны
     </h2>
 
-    <!-- ========== КАТЕГОРИИ (ПОД НАДПИСЬЮ "РЕСТОРАНЫ") ========== -->
+    <!-- Категории -->
     <div class="categories-filter" style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 40px;">
         <a href="{{ url_for('main.category', category_name='all') }}" class="category-btn active" data-cat="all">
             <i class="fas fa-th-large"></i> Все
@@ -88,26 +88,28 @@
         <a href="{{ url_for('main.category', category_name='breakfast') }}" class="category-btn" data-cat="breakfast">
             <i class="fas fa-coffee"></i> Завтраки
         </a>
-         <a href="{{ url_for('main.category', category_name='dessert') }}" class="category-btn" data-cat="dessert">
+        <a href="{{ url_for('main.category', category_name='dessert') }}" class="category-btn" data-cat="dessert">
             <i class="fas fa-cake-candles"></i> Десерты
-             </a>
+        </a>
     </div>
-    <!-- ========== КОНЕЦ КАТЕГОРИЙ ========== -->
 
-    <div class="restaurants">
-        {% for restaurant in restaurants %}
-            <div class="restaurant">
-                <img src="{{ url_for('static', filename=restaurant.image) }}" alt="{{ restaurant.name }}">
-                <h3>{{ restaurant.name }}</h3>
-                <div class="delivery-time">
-                    <i class="fas fa-clock"></i>
-                    <span>{{ restaurant.delivery_time }} мин</span>
+    <!-- КОНТЕЙНЕР ДЛЯ СКЕЛЕТОНОВ -->
+    <div id="cardsContainer">
+        <div class="restaurants">
+            {% for restaurant in restaurants %}
+                <div class="restaurant">
+                    <img src="{{ url_for('static', filename=restaurant.image) }}" alt="{{ restaurant.name }}">
+                    <h3>{{ restaurant.name }}</h3>
+                    <div class="delivery-time">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ restaurant.delivery_time }} мин</span>
+                    </div>
+                    <a href="{{ url_for('main.restaurant', restaurant_id=restaurant.id) }}" class="btn">
+                        В меню <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
-                <a href="{{ url_for('main.restaurant', restaurant_id=restaurant.id) }}" class="btn">
-                    В меню <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
 </section>
 </div>
@@ -133,5 +135,87 @@
 .restaurant a:hover {
     background-color: #ffdb4d;
 }
+
+/* Стили для скелетонов */
+.skeleton {
+    background: linear-gradient(90deg, #e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%);
+    background-size: 200% 100%;
+    animation: skeletonLoading 1.5s infinite;
+    border-radius: 8px;
+}
+
+@keyframes skeletonLoading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+body.dark-theme .skeleton {
+    background: linear-gradient(90deg, #3d3d3d 25%, #4d4d4d 50%, #3d3d3d 75%);
+}
+
+.skeleton-card {
+    width: 220px;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+body.dark-theme .skeleton-card {
+    background: #2d2d2d;
+}
+
+.skeleton-card .skeleton-image {
+    width: 100%;
+    height: 160px;
+}
+
+.skeleton-card .skeleton-text {
+    height: 16px;
+    margin: 12px;
+}
+
+.skeleton-card .skeleton-text-small {
+    height: 12px;
+    width: 60%;
+    margin: 12px;
+}
 </style>
+
+<script>
+// Функция для показа скелетонов
+function showSkeletons(containerId, cardCount = 6) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    // Сохраняем реальный контент
+    const realContent = container.innerHTML;
+    container.setAttribute('data-real-content', encodeURIComponent(realContent));
+
+    // Генерируем скелетоны
+    let skeletons = '<div style="display: flex; gap: 20px; flex-wrap: wrap;">';
+    for (let i = 0; i < cardCount; i++) {
+        skeletons += `
+            <div class="skeleton-card">
+                <div class="skeleton skeleton-image"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text-small"></div>
+            </div>
+        `;
+    }
+    skeletons += '</div>';
+
+    container.innerHTML = skeletons;
+
+    // Через 1 секунду показываем реальный контент
+    setTimeout(() => {
+        container.innerHTML = decodeURIComponent(container.getAttribute('data-real-content'));
+    }, 1000);
+}
+
+// Запускаем скелетоны после загрузки страницы
+document.addEventListener('DOMContentLoaded', function() {
+    showSkeletons('cardsContainer', 6);
+});
+</script>
 {% endblock %}

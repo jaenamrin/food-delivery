@@ -60,12 +60,26 @@
                         <div class="order-number">
                             <i class="fas fa-receipt"></i> Заказ №{{ order.id }}
                         </div>
-                        <div class="order-status {{ 'active' if order.is_active else 'completed' }}">
-                            <i class="fas {{ 'fa-truck' if order.is_active else 'fa-check-circle' }}"></i>
-                            {{ "В пути" if order.is_active else "Доставлен" }}
-                        </div>
-                    </div>
-
+                      {% if order.is_active %}
+    <div class="order-status active">
+        <i class="fas fa-truck"></i> В пути
+    </div>
+    <div class="delivery-timer-container"
+         data-created="{{ order.created_at.isoformat() }}"
+         data-delivery-time="{{ order.max_delivery }}">
+        <div class="delivery-timer-text">
+            <i class="fas fa-clock"></i>
+            <span class="timer-display">--:--</span>
+        </div>
+        <div class="delivery-progress-bar">
+            <div class="delivery-progress-fill"></div>
+        </div>
+    </div>
+{% else %}
+    <div class="order-status completed">
+        <i class="fas fa-check-circle"></i> Доставлен
+    </div>
+{% endif %}
                     <!-- Статус оплаты -->
                     {% if not order.is_paid %}
                         <div class="payment-status unpaid">
@@ -424,5 +438,81 @@
     text-decoration: none;
     font-size: 0.9rem;
 }
+
+/* Таймер доставки (прогресс-бар) */
+.delivery-timer-container {
+    margin-top: 12px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+body.dark-theme .delivery-timer-container {
+    background: #3d3d3d;
+}
+
+.delivery-timer-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #ff9800;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.delivery-progress-bar {
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.delivery-progress-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #ff9800, #00b83a);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
 </style>
+
+<script>
+function updateAllTimers() {
+    const containers = document.querySelectorAll('.delivery-timer-container');
+    const now = new Date().getTime();
+
+    containers.forEach(container => {
+        const createdAt = new Date(container.dataset.created);
+        const deliveryMinutes = parseInt(container.dataset.deliveryTime);
+        const endTime = createdAt.getTime() + (deliveryMinutes * 60 * 1000);
+        const remaining = endTime - now;
+
+        const timerSpan = container.querySelector('.timer-display');
+        const progressFill = container.querySelector('.delivery-progress-fill');
+
+        if (remaining <= 0) {
+            timerSpan.innerHTML = '✅ Доставлен';
+            progressFill.style.width = '100%';
+            const statusDiv = container.closest('.order-item').querySelector('.order-status');
+            if (statusDiv) {
+                statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Доставлен';
+                statusDiv.classList.remove('active');
+                statusDiv.classList.add('completed');
+            }
+        } else {
+            const minutes = Math.floor(remaining / 60000);
+            const seconds = Math.floor((remaining % 60000) / 1000);
+            timerSpan.innerHTML = `${minutes} мин ${seconds} сек`;
+
+            const totalTime = deliveryMinutes * 60 * 1000;
+            const progressPercent = ((totalTime - remaining) / totalTime) * 100;
+            progressFill.style.width = `${Math.min(100, progressPercent)}%`;
+        }
+    });
+}
+
+setInterval(updateAllTimers, 1000);
+updateAllTimers();
+</script>
 {% endblock %}
