@@ -9,6 +9,9 @@ from functools import wraps
 import uuid
 from datetime import datetime
 from flask import abort
+from forms import ReviewForm
+from models import Review
+from models import Favorite
 
 main_bp = Blueprint('main', __name__)
 
@@ -806,3 +809,106 @@ def reorder(order_id):
     session['cart'] = cart
     flash('Товары добавлены в корзину!', 'success')
     return redirect(url_for('main.cart'))
+
+
+@main_bp.route('/add_review/<int:restaurant_id>', methods=['POST'])
+@login_required
+def add_review(restaurant_id):
+    restaurant = Restaurant.query.get_or_404(restaurant_id)
+
+    rating = request.form.get('rating', type=int)
+    comment = request.form.get('comment', '').strip()
+
+    if not rating or rating < 1 or rating > 5:
+        return jsonify({'success': False, 'error': 'Некорректная оценка'})
+
+    # Проверяем, был ли уже отзыв от этого пользователя
+    existing_review = Review.query.filter_by(
+        user_id=current_user.id,
+        restaurant_id=restaurant_id
+    ).first()
+
+    if existing_review:
+        # Обновляем существующий отзыв
+        old_rating = existing_review.rating
+        existing_review.rating = rating
+        existing_review.comment = comment
+        existing_review.created_at = datetime.utcnow()
+
+        # Обновляем сумму в ресторане
+        restaurant.rating_sum = restaurant.rating_sum - old_rating + rating
+    else:
+        # Новый отзыв
+        review = Review(
+            user_id=current_user.id,
+            restaurant_id=restaurant_id,
+            rating=rating,
+            comment=comment
+        )
+        db.session.add(review)
+        restaurant.rating_sum += rating
+        restaurant.rating_count += 1
+
+    db.session.commit()
+
+    return jsonify({
+        'success': True,
+        'average_rating': restaurant.average_rating,
+        'rating_count': restaurant.rating_count,
+        'user_rating': rating,
+        'user_comment': comment,
+        'user_name': current_user.username,
+        'created_at': datetime.utcnow().strftime('%d.%m.%Y')
+    })
+
+
+@main_bp.route('/get_reviews/<int:restaurant_id>')
+def get_reviews(restaurant_id):
+    restaurant = Restaurant.query.get_or_404(restaurant_id)
+    reviews = Review.query.filter_by(restaurant_id=restaurant_id) \
+        .order_by(Review.created_at.desc()).all()
+
+    reviews_data = []
+    for review in reviews:
+        reviews_data.append({
+            'user_name': review.user.username,
+            'rating': review.rating,
+            'comment': review.comment,
+            'created_at': review.created_at.strftime('%d.%m.%Y'),
+            'is_own': review.user_id == (current_user.id if current_user.is_authenticated else None)
+        })
+
+    return jsonify({
+        'average_rating': restaurant.average_rating,
+        'rating_count': restaurant.rating_count,
+        'reviews': reviews_data
+    })
+
+
+
+@main_bp.route('/toggle_favorite/<int:restaurant_id>', methods=['POST'])
+@login_required
+def toggle_favorite(restaurant_id):
+    favorite = Favorite.query.filter_by(
+        user_id=current_user.id,
+        restaurant_id=restaurant_id
+    ).first()
+
+    if favorite:
+        db.session.delete(favorite)
+        is_favorite = False
+    else:
+        favorite = Favorite(user_id=current_user.id, restaurant_id=restaurant_id)
+        db.session.add(favorite)
+        is_favorite = True
+
+    db.session.commit()
+    return jsonify({'success': True, 'is_favorite': is_favorite})
+
+
+@main_bp.route('/profile/favorites')
+@login_required
+def profile_favorites():
+    favorites = Favorite.query.filter_by(user_id=current_user.id).all()
+    restaurants = [fav.restaurant for fav in favorites]
+    return render_template('profile_favorites.html', restaurants=restaurants)

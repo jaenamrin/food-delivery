@@ -48,6 +48,9 @@
         <a class="btn btn-logout" href="{{ url_for('main.logout') }}">
             <i class="fas fa-sign-out-alt"></i> Выйти из аккаунта
         </a>
+        <a class="btn btn-favorites" href="{{ url_for('main.profile_favorites') }}">
+            <i class="fas fa-heart"></i> Избранное (<span id="favoritesCount">{{ current_user.favorites|length }}</span>)
+        </a>
     </div>
 
     <!-- История заказов -->
@@ -479,6 +482,17 @@ body.dark-theme .delivery-timer-container {
     background: linear-gradient(90deg, #ff9800, #00b83a);
     border-radius: 3px;
     transition: width 0.3s ease;
+}
+    .btn-favorites {
+    background: white;
+    color: #ff5a5f;
+    border: 1px solid #ff5a5f;
+    flex: 1;
+    justify-content: center;
+}
+.btn-favorites:hover {
+    background: #ff5a5f;
+    color: white;
 }
 </style>
 

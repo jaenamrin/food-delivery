@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, Email, Length, Optional
 
 
@@ -42,4 +42,13 @@ class ProfileForm(FlaskForm):
     phone = StringField('Телефон', validators=[Optional(), Length(max=20)])
     address = StringField('Адрес', validators=[Optional(), Length(max=255)])
     submit = SubmitField('Сохранить')
-
+class ReviewForm(FlaskForm):
+    rating = SelectField('Оценка', choices=[
+        (5, '★★★★★'),
+        (4, '★★★★☆'),
+        (3, '★★★☆☆'),
+        (2, '★★☆☆☆'),
+        (1, '★☆☆☆☆')
+    ], validators=[DataRequired()], coerce=int)
+    comment = TextAreaField('Комментарий', validators=[Optional(), Length(max=500)])
+    submit = SubmitField('Оставить отзыв')

@@ -36,7 +36,14 @@ class Restaurant(db.Model):
     delivery_time = db.Column(db.Integer, default=30)
     image = db.Column(db.String(200), default='images/default.png')
     menu_items = db.relationship('MenuItem', backref='restaurant', lazy=True, cascade='all, delete-orphan')
+    rating_sum = db.Column(db.Float, default=0.0)  # Сумма всех оценок
+    rating_count = db.Column(db.Integer, default=0)  # Количество оценок
 
+    @property
+    def average_rating(self):
+        if self.rating_count == 0:
+            return 0
+        return round(self.rating_sum / self.rating_count, 1)
 
 class MenuItem(db.Model):
     __tablename__ = 'menu_item'
@@ -76,3 +83,31 @@ class OrderItem(db.Model):
     menu_item_id = db.Column(db.Integer, db.ForeignKey('menu_item.id', ondelete='CASCADE'), nullable=False)
     quantity = db.Column(db.Integer, default=1)
     menu_item = db.relationship('MenuItem')
+
+
+class Review(db.Model):
+    __tablename__ = 'review'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    restaurant_id = db.Column(db.Integer, db.ForeignKey('restaurant.id', ondelete='CASCADE'), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)  # 1-5
+    comment = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Связи
+    user = db.relationship('User', backref='reviews')
+    restaurant = db.relationship('Restaurant', backref='reviews')
+
+    # Ограничение: один пользователь - один отзыв на ресторан
+    __table_args__ = (db.UniqueConstraint('user_id', 'restaurant_id', name='unique_user_restaurant_review'),)
+
+
+class Favorite(db.Model):
+    __tablename__ = 'favorite'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    restaurant_id = db.Column(db.Integer, db.ForeignKey('restaurant.id', ondelete='CASCADE'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='favorites')
+    restaurant = db.relationship('Restaurant', backref='favorited_by')

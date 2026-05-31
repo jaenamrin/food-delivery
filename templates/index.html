@@ -4,7 +4,7 @@
 {% block content %}
 <div class="homepage" style="display:flex; flex-direction:column; gap:30px;">
 
-<!-- 🔥 Акции и скидки -->
+<!--  Акции и скидки -->
 <section class="promotions">
     <h2>
         <i class="fas fa-fire"></i>
@@ -180,6 +180,27 @@ body.dark-theme .skeleton-card {
     width: 60%;
     margin: 12px;
 }
+    .favorite-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 10;
+}
+.favorite-btn i {
+    font-size: 18px;
+    color: #ff5a5f;
+}
+.favorite-btn.active i {
+    font-weight: 900;
+    color: #ff5a5f;
+}
 </style>
 
 <script>
@@ -217,5 +238,33 @@ function showSkeletons(containerId, cardCount = 6) {
 document.addEventListener('DOMContentLoaded', function() {
     showSkeletons('cardsContainer', 6);
 });
+async function toggleFavorite(btn, restaurantId) {
+    try {
+        const response = await fetch(`/toggle_favorite/${restaurantId}`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            const icon = btn.querySelector('i');
+            if (data.is_favorite) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                btn.classList.add('active');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                btn.classList.remove('active');
+            }
+            // Показываем уведомление
+            showToast(data.message, 'success');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
 </script>
 {% endblock %}

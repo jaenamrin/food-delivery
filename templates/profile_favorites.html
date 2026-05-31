@@ -1,0 +1,391 @@
+{% extends "base.html" %}
+{% block title %}Избранное — Личный кабинет{% endblock %}
+
+{% block content %}
+<div class="profile-favorites-container">
+    <div class="favorites-header">
+        <a href="{{ url_for('main.profile') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Назад в профиль
+        </a>
+        <h1><i class="fas fa-heart"></i> Избранные рестораны</h1>
+    </div>
+
+    {% if restaurants %}
+    <div class="favorites-grid">
+        {% for restaurant in restaurants %}
+        <div class="favorite-card" data-id="{{ restaurant.id }}">
+            <div class="favorite-card-image">
+                <img src="{{ url_for('static', filename=restaurant.image) }}" alt="{{ restaurant.name }}">
+                <button class="remove-favorite-btn" onclick="removeFromFavorites(this, {{ restaurant.id }})">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+            <div class="favorite-card-content">
+                <h3>{{ restaurant.name }}</h3>
+                <div class="favorite-card-info">
+                    <span class="info-item">
+                        <i class="fas fa-clock"></i> {{ restaurant.delivery_time }} мин
+                    </span>
+                    <span class="info-item">
+                        <i class="fas fa-map-marker-alt"></i> {{ restaurant.city or 'Город не указан' }}
+                    </span>
+                </div>
+                <div class="favorite-card-rating">
+                    <i class="fas fa-star"></i>
+                    <span>{{ "%.1f"|format(restaurant.average_rating|default(0)) }}</span>
+                    <span class="rating-count">({{ restaurant.rating_count|default(0) }} отзывов)</span>
+                </div>
+                <a href="{{ url_for('main.restaurant', restaurant_id=restaurant.id) }}" class="btn-go">
+                    Перейти в ресторан <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-favorites">
+        <div class="empty-icon">
+            <i class="far fa-heart"></i>
+        </div>
+        <h3>У вас пока нет избранных ресторанов</h3>
+        <p>Добавляйте рестораны в избранное, чтобы не потерять их</p>
+        <a href="{{ url_for('main.index') }}" class="btn-explore">
+            <i class="fas fa-utensils"></i> Перейти к ресторанам
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.profile-favorites-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+    min-height: calc(100vh - 200px);
+}
+
+.favorites-header {
+    margin-bottom: 40px;
+}
+
+.favorites-header h1 {
+    font-size: 2rem;
+    color: #1a1a1a;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.favorites-header h1 i {
+    color: #ff5a5f;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #00b83a;
+}
+
+.favorites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+}
+
+.favorite-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid #eaeaea;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.favorite-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.favorite-card-image {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.favorite-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.favorite-card:hover .favorite-card-image img {
+    transform: scale(1.05);
+}
+
+.remove-favorite-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: all 0.2s;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.remove-favorite-btn i {
+    font-size: 16px;
+    color: #ff5a5f;
+}
+
+.remove-favorite-btn:hover {
+    background: #ff5a5f;
+    transform: scale(1.05);
+}
+
+.remove-favorite-btn:hover i {
+    color: white;
+}
+
+.favorite-card-content {
+    padding: 18px;
+}
+
+.favorite-card-content h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.favorite-card-info {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+.info-item i {
+    font-size: 12px;
+    color: #00b83a;
+}
+
+.favorite-card-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 15px;
+    color: #ffc107;
+    font-size: 0.85rem;
+}
+
+.favorite-card-rating .rating-count {
+    color: #6c757d;
+}
+
+.btn-go {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    background: #00b83a;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 40px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-go:hover {
+    background: #008f2c;
+    gap: 12px;
+}
+
+/* Пустое состояние */
+.empty-favorites {
+    text-align: center;
+    padding: 80px 40px;
+    background: white;
+    border-radius: 24px;
+    border: 1px solid #eaeaea;
+}
+
+.empty-icon {
+    font-size: 80px;
+    color: #ccc;
+    margin-bottom: 25px;
+}
+
+.empty-icon i {
+    font-size: 80px;
+}
+
+.empty-favorites h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #1a1a1a;
+}
+
+.empty-favorites p {
+    color: #6c757d;
+    margin-bottom: 30px;
+}
+
+.btn-explore {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #00b83a;
+    color: white;
+    padding: 12px 28px;
+    border-radius: 40px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-explore:hover {
+    background: #008f2c;
+    gap: 15px;
+}
+
+/* Тёмная тема */
+body.dark-theme .favorite-card {
+    background: #1e1e2e;
+    border-color: #2a2a35;
+}
+
+body.dark-theme .favorite-card-content h3 {
+    color: #ffffff;
+}
+
+body.dark-theme .info-item {
+    color: #a0a0a0;
+}
+
+body.dark-theme .empty-favorites {
+    background: #1e1e2e;
+    border-color: #2a2a35;
+}
+
+body.dark-theme .empty-favorites h3 {
+    color: #ffffff;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .favorites-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .favorites-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .favorite-card-image {
+        height: 180px;
+    }
+
+    .empty-favorites {
+        padding: 50px 20px;
+    }
+
+    .empty-icon {
+        font-size: 60px;
+    }
+
+    .empty-icon i {
+        font-size: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-favorites-container {
+        padding: 0 15px;
+    }
+
+    .favorite-card-info {
+        flex-direction: column;
+        gap: 6px;
+    }
+}
+</style>
+
+<script>
+async function removeFromFavorites(btn, restaurantId) {
+    // Показываем анимацию удаления
+    const card = btn.closest('.favorite-card');
+    card.style.opacity = '0';
+    card.style.transform = 'scale(0.8)';
+
+    try {
+        const response = await fetch(`/toggle_favorite/${restaurantId}`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            setTimeout(() => {
+                card.remove();
+
+                // Обновляем счётчик в профиле
+                const favoritesCount = document.querySelector('.btn-favorites');
+                if (favoritesCount) {
+                    const currentCount = parseInt(favoritesCount.innerText.match(/\d+/)) || 0;
+                    favoritesCount.innerHTML = `<i class="fas fa-heart"></i> Избранное (${currentCount - 1})`;
+                }
+
+                // Если больше нет избранных, показываем пустое состояние
+                const remainingCards = document.querySelectorAll('.favorite-card').length;
+                if (remainingCards === 0) {
+                    location.reload();
+                }
+            }, 200);
+        } else {
+            // Если ошибка, возвращаем карточку обратно
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1)';
+            showToast('Ошибка при удалении', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        card.style.opacity = '1';
+        card.style.transform = 'scale(1)';
+        showToast('Ошибка при удалении из избранного', 'error');
+    }
+}
+</script>
+{% endblock %}

@@ -21,7 +21,13 @@
             <div class="restaurant-meta">
                 <span class="meta-item"><i class="fas fa-map-marker-alt"></i> {{ restaurant.city or 'Город не указан' }}</span>
                 <span class="meta-item"><i class="fas fa-clock"></i> Доставка: {{ restaurant.delivery_time }}–{{ restaurant.delivery_time + 15 }} мин</span>
-                <span class="meta-item"><i class="fas fa-star"></i> 4.8 ★ (1 200+ оценок)</span>
+                <span class="meta-item"><i class="fas fa-star"></i> {{ "%.1f"|format(restaurant.average_rating|default(0)) }} ★ ({{ restaurant.rating_count|default(0) }} отзывов)</span>
+            </div>
+                <!-- ========== КНОПКА ИЗБРАННОГО ========== -->
+             <button class="favorite-restaurant-btn" onclick="toggleFavorite(this, {{ restaurant.id }})">
+                <i class="far fa-heart"></i>
+                <span class="favorite-text">В избранное</span>
+              </button>
             </div>
         </div>
     </div>
@@ -41,33 +47,33 @@
     <!-- Список блюд -->
     <div class="menu-items">
         {% for item in menu_items %}
-<div class="menu-card" data-category="{{ item.category }}" onclick="window.location.href='{{ url_for('main.menu_item', item_id=item.id) }}'">
-    <div class="menu-card-image">
-        <img src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }}">
-        <div class="menu-card-badge">
-            {% if item.category == 'pizza' %} Пицца
-            {% elif item.category == 'burger' %} Бургер
-            {% elif item.category == 'sushi' %} Суши
-            {% elif item.category == 'breakfast' %} Завтрак
-            {% elif item.category == 'dessert' %} Десерт
-            {% elif item.category == 'drink' %} Напиток
-            {% else %} Другое
-            {% endif %}
+        <div class="menu-card" data-category="{{ item.category }}" onclick="window.location.href='{{ url_for('main.menu_item', item_id=item.id) }}'">
+            <div class="menu-card-image">
+                <img src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }}">
+                <div class="menu-card-badge">
+                    {% if item.category == 'pizza' %}Пицца
+                    {% elif item.category == 'burger' %}Бургер
+                    {% elif item.category == 'sushi' %}Суши
+                    {% elif item.category == 'breakfast' %}Завтрак
+                    {% elif item.category == 'dessert' %}Десерт
+                    {% elif item.category == 'drink' %}Напиток
+                    {% else %}Другое
+                    {% endif %}
+                </div>
+            </div>
+            <div class="menu-card-content">
+                <h3>{{ item.name }}</h3>
+                <div class="menu-card-details">
+                    <span class="weight"><i class="fas fa-weight-hanging"></i> {{ item.weight or '250 г' }}</span>
+                    <span class="price">{{ item.price }} ₽</span>
+                </div>
+                <p class="description">{{ item.description or 'Описание отсутствует' }}</p>
+                <button class="add-to-cart-btn" onclick="event.stopPropagation(); document.getElementById('add-form-{{ item.id }}').submit();">
+                    <i class="fas fa-shopping-cart"></i> В корзину
+                </button>
+                <form id="add-form-{{ item.id }}" action="{{ url_for('main.add_to_cart', item_id=item.id) }}" method="post" style="display: none;"></form>
+            </div>
         </div>
-    </div>
-    <div class="menu-card-content">
-        <h3>{{ item.name }}</h3>
-        <div class="menu-card-details">
-            <span class="weight"><i class="fas fa-weight-hanging"></i> {{ item.weight }}</span>
-            <span class="price">{{ item.price }} ₽</span>
-        </div>
-        <p class="description">{{ item.description }}</p>
-        <button class="add-to-cart-btn" onclick="event.stopPropagation(); document.getElementById('add-form-{{ item.id }}').submit();">
-            <i class="fas fa-shopping-cart"></i> В корзину
-        </button>
-        <form id="add-form-{{ item.id }}" action="{{ url_for('main.add_to_cart', item_id=item.id) }}" method="post" style="display: none;"></form>
-    </div>
-</div>
         {% else %}
         <div class="empty-menu">
             <i class="fas fa-utensils"></i>
@@ -76,21 +82,87 @@
         </div>
         {% endfor %}
     </div>
+
+    <!-- Отзывы о ресторане -->
+    <div class="reviews-section">
+        <h3><i class="fas fa-star"></i> Отзывы о ресторане</h3>
+
+        <div class="rating-summary">
+            <div class="rating-stars">
+                {% set avg = restaurant.average_rating|default(0) %}
+                {% for i in range(5) %}
+                    {% if i < avg|round(0, 'floor') %}
+                        <i class="fas fa-star"></i>
+                    {% elif i < avg %}
+                        <i class="fas fa-star-half-alt"></i>
+                    {% else %}
+                        <i class="far fa-star"></i>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div>
+                <span class="average-rating">{{ "%.1f"|format(avg) }}</span>
+                <span class="rating-count">({{ restaurant.rating_count|default(0) }} отзывов)</span>
+            </div>
+        </div>
+
+        {% if current_user.is_authenticated %}
+        <div class="add-review-form">
+            <h4>Ваш отзыв</h4>
+            <form id="reviewForm">
+                <div class="form-group">
+                    <label>Оценка</label>
+                    <div class="star-rating-widget">
+                        <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+                        <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+                        <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+                        <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+                        <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <textarea id="reviewComment" rows="3" placeholder="Поделитесь впечатлениями..."></textarea>
+                </div>
+                <button type="submit" class="btn-submit-review">Отправить отзыв</button>
+            </form>
+            <div id="reviewMessage"></div>
+        </div>
+        {% else %}
+        <p><a href="{{ url_for('main.login') }}">Войдите</a>, чтобы оставить отзыв</p>
+        {% endif %}
+
+        {% for review in restaurant.reviews|reverse %}
+        <div class="review-item">
+            <div class="review-header">
+                <strong>{{ review.user.username }}</strong>
+                <div class="review-stars">
+                    {% for i in range(5) %}
+                        {% if i < review.rating %}
+                            <i class="fas fa-star"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <p>{{ review.comment }}</p>
+            <small>{{ review.created_at.strftime('%d.%m.%Y') }}</small>
+        </div>
+        {% else %}
+        <p>Пока нет отзывов. Будьте первым!</p>
+        {% endfor %}
+    </div>
 </div>
 
 <style>
-/* Общие стили */
 .restaurant-page {
     max-width: 1300px;
     margin: 0 auto;
     padding: 0 20px 60px;
 }
-
-/* Кнопка назад */
 .back-link-wrapper {
     margin: 20px 0 10px;
 }
-
 .back-link {
     display: inline-flex;
     align-items: center;
@@ -101,30 +173,24 @@
     padding: 8px 0;
     transition: color 0.2s;
 }
-
 .back-link:hover {
     color: #00b83a;
 }
-
-/* Шапка ресторана */
 .restaurant-hero {
     position: relative;
     margin-bottom: 40px;
 }
-
 .restaurant-cover {
     position: relative;
     height: 280px;
     border-radius: 24px;
     overflow: hidden;
 }
-
 .restaurant-cover img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
-
 .restaurant-overlay {
     position: absolute;
     top: 0;
@@ -133,7 +199,6 @@
     bottom: 0;
     background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.1) 100%);
 }
-
 .restaurant-info {
     position: absolute;
     bottom: -30px;
@@ -144,19 +209,16 @@
     box-shadow: 0 8px 25px rgba(0,0,0,0.1);
     min-width: 300px;
 }
-
 .restaurant-info h1 {
     margin: 0 0 10px 0;
     font-size: 1.8rem;
     color: #1a1a1a;
 }
-
 .restaurant-meta {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
 }
-
 .meta-item {
     display: flex;
     align-items: center;
@@ -164,12 +226,9 @@
     color: #6c757d;
     font-size: 0.85rem;
 }
-
 .meta-item i {
     color: #00b83a;
 }
-
-/* Категории меню */
 .menu-categories {
     display: flex;
     flex-wrap: wrap;
@@ -177,7 +236,6 @@
     justify-content: center;
     margin: 30px 0 40px;
 }
-
 .category-filter {
     background: #f8f9fa;
     border: none;
@@ -189,29 +247,22 @@
     cursor: pointer;
     transition: all 0.2s;
 }
-
 .category-filter i {
     margin-right: 6px;
 }
-
 .category-filter:hover {
     background: #e9ecef;
     transform: translateY(-2px);
 }
-
 .category-filter.active {
     background: #00b83a;
     color: white;
 }
-
-/* Сетка блюд */
 .menu-items {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 25px;
 }
-
-/* Карточка блюда */
 .menu-card {
     background: white;
     border-radius: 20px;
@@ -220,29 +271,24 @@
     transition: all 0.3s ease;
     cursor: pointer;
 }
-
 .menu-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 35px rgba(0,0,0,0.15);
 }
-
 .menu-card-image {
     position: relative;
     height: 200px;
     overflow: hidden;
 }
-
 .menu-card-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
 }
-
 .menu-card:hover .menu-card-image img {
     transform: scale(1.05);
 }
-
 .menu-card-badge {
     position: absolute;
     top: 12px;
@@ -255,40 +301,33 @@
     font-size: 0.75rem;
     font-weight: 500;
 }
-
 .menu-card-content {
     padding: 18px;
 }
-
 .menu-card-content h3 {
     margin: 0 0 8px 0;
     font-size: 1.1rem;
     font-weight: 600;
     color: #1a1a1a;
 }
-
 .menu-card-details {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
 }
-
 .weight {
     color: #6c757d;
     font-size: 0.8rem;
 }
-
 .weight i {
     margin-right: 4px;
 }
-
 .price {
     font-size: 1.2rem;
     font-weight: 700;
     color: #00b83a;
 }
-
 .description {
     color: #6c757d;
     font-size: 0.85rem;
@@ -299,8 +338,6 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
-
-/* Кнопка добавления в корзину */
 .add-to-cart-btn {
     width: 100%;
     background: #00b83a;
@@ -317,17 +354,10 @@
     justify-content: center;
     gap: 8px;
 }
-
 .add-to-cart-btn:hover {
     background: #008f2c;
     transform: translateY(-2px);
 }
-
-.add-to-cart-btn:active {
-    transform: translateY(0);
-}
-
-/* Пустое меню */
 .empty-menu {
     text-align: center;
     padding: 60px;
@@ -335,28 +365,111 @@
     border-radius: 24px;
     grid-column: 1 / -1;
 }
-
 .empty-menu i {
     font-size: 60px;
     color: #ccc;
     margin-bottom: 20px;
 }
-
-.empty-menu h3 {
-    margin-bottom: 10px;
+.reviews-section {
+    margin-top: 60px;
+    padding-top: 40px;
+    border-top: 2px solid #f0f0f0;
+}
+.reviews-section h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+.rating-summary {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-radius: 16px;
+    width: fit-content;
+}
+.rating-stars {
+    color: #ffc107;
+    font-size: 1.2rem;
+}
+.average-rating {
+    font-weight: 700;
+    font-size: 1.2rem;
     color: #1a1a1a;
 }
-
-.empty-menu p {
+.rating-count {
     color: #6c757d;
 }
-
-/* Адаптив */
+.add-review-form {
+    background: #f8f9fa;
+    padding: 24px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+}
+.star-rating-widget {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 5px;
+}
+.star-rating-widget input {
+    display: none;
+}
+.star-rating-widget label {
+    font-size: 28px;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.star-rating-widget label:hover,
+.star-rating-widget label:hover ~ label,
+.star-rating-widget input:checked ~ label {
+    color: #ffc107;
+}
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    font-family: inherit;
+    resize: vertical;
+    margin: 10px 0;
+}
+.btn-submit-review {
+    background: #00b83a;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 40px;
+    cursor: pointer;
+    font-weight: 600;
+}
+.btn-submit-review:hover {
+    background: #008f2c;
+}
+.review-item {
+    border-bottom: 1px solid #eaeaea;
+    padding: 15px 0;
+}
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.review-stars {
+    color: #ffc107;
+    font-size: 12px;
+}
+.review-item p {
+    margin: 0 0 8px 0;
+    color: #1a1a1a;
+}
+.review-item small {
+    color: #6c757d;
+    font-size: 0.75rem;
+}
 @media (max-width: 768px) {
-    .back-link-wrapper {
-        margin: 10px 0;
-    }
-
     .restaurant-info {
         position: relative;
         left: 0;
@@ -365,35 +478,45 @@
         width: 100%;
         text-align: center;
     }
-
     .restaurant-meta {
         justify-content: center;
     }
-
     .restaurant-cover {
         height: 200px;
     }
-
     .menu-items {
         grid-template-columns: 1fr;
     }
-
-    .menu-categories {
-        gap: 8px;
-    }
-
-    .category-filter {
-        padding: 6px 14px;
-        font-size: 0.8rem;
-    }
+}
+/* Кнопка избранного на странице ресторана */
+.favorite-restaurant-btn {
+    margin-top: 15px;
+    background: white;
+    border: 1px solid #ff5a5f;
+    color: #ff5a5f;
+    padding: 8px 20px;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
 }
 
-@media (max-width: 480px) {
-    .menu-card-details {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-    }
+.favorite-restaurant-btn.active {
+    background: #ff5a5f;
+    color: white;
+}
+
+.favorite-restaurant-btn.active i {
+    font-weight: 900;
+}
+
+.favorite-restaurant-btn:hover {
+    background: #ff5a5f;
+    color: white;
+    transform: translateY(-2px);
 }
 </style>
 
@@ -401,30 +524,81 @@
 // Фильтрация по категориям
 document.querySelectorAll('.category-filter').forEach(button => {
     button.addEventListener('click', function() {
-        // Убираем active у всех кнопок
         document.querySelectorAll('.category-filter').forEach(btn => btn.classList.remove('active'));
-        // Добавляем active текущей кнопке
         this.classList.add('active');
-
         const filter = this.getAttribute('data-filter');
-        const cards = document.querySelectorAll('.menu-card');
-
-        cards.forEach(card => {
+        document.querySelectorAll('.menu-card').forEach(card => {
             if (filter === 'all' || card.getAttribute('data-category') === filter) {
                 card.style.display = 'block';
-                setTimeout(() => {
-                    card.style.opacity = '1';
-                    card.style.transform = 'scale(1)';
-                }, 10);
             } else {
-                card.style.opacity = '0';
-                card.style.transform = 'scale(0.8)';
-                setTimeout(() => {
-                    card.style.display = 'none';
-                }, 200);
+                card.style.display = 'none';
             }
         });
     });
 });
+
+// Отзывы
+const reviewForm = document.getElementById('reviewForm');
+if (reviewForm) {
+    reviewForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const rating = document.querySelector('input[name="rating"]:checked')?.value;
+        const comment = document.getElementById('reviewComment').value;
+        const messageDiv = document.getElementById('reviewMessage');
+        if (!rating) {
+            messageDiv.innerHTML = '<div style="background: #fff3cd; padding: 10px; border-radius: 8px;">Выберите оценку</div>';
+            return;
+        }
+        const formData = new FormData();
+        formData.append('rating', rating);
+        formData.append('comment', comment);
+        try {
+            const response = await fetch('/add_review/{{ restaurant.id }}', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (data.success) {
+                messageDiv.innerHTML = '<div style="background: #d4edda; padding: 10px; border-radius: 8px;">Отзыв добавлен! Обновляем...</div>';
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                messageDiv.innerHTML = '<div style="background: #f8d7da; padding: 10px; border-radius: 8px;">' + data.error + '</div>';
+            }
+        } catch (error) {
+            messageDiv.innerHTML = '<div style="background: #f8d7da; padding: 10px; border-radius: 8px;">Ошибка при отправке</div>';
+        }
+    });
+}
+// Кнопка избранного на странице ресторана
+async function toggleFavorite(btn, restaurantId) {
+    try {
+        const response = await fetch(`/toggle_favorite/${restaurantId}`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            const icon = btn.querySelector('i');
+            const text = btn.querySelector('.favorite-text');
+
+            if (data.is_favorite) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                btn.classList.add('active');
+                text.textContent = 'В избранном';
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                btn.classList.remove('active');
+                text.textContent = 'В избранное';
+            }
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
 </script>
 {% endblock %}
